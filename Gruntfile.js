@@ -25,7 +25,7 @@ module.exports = function (grunt) {
         stripBanners: true
       },
       dist: {
-        src: ['src/<%= pkg.name %>.js'],
+        src: ['bower_components/speakingurl/lib/index.js', 'src/<%= pkg.name %>.js'],
         dest: 'dist/jquery.<%= pkg.name %>.js'
       }
     },

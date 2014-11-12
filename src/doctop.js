@@ -5,7 +5,7 @@
  * Licensed under the MIT license.
  */
 /*jshint -W083*/
-/*global getSlug,console*/
+/*global getSlug,console,Tabletop*/
 (function ($) {
 
   // Static method.
@@ -33,11 +33,40 @@
             children = root.filter(sections[i]).after().nextUntil(sections[i+1]).filter(function(){return $(this).text().trim() !== '';});
           }
 
-          var slug = getSlug($(sections[i]).text(), {separator: '_'});
-          outline[slug] = children;
+          var slug = options.simpleKeys ? 'section_' + i : getSlug($(sections[i]).text(), {separator: '_'});
+          if (options.preserveFormatting === false && options.returnJquery === false) {
+            var childElements = [];
+            children.each(function(){
+              childElements.push($(this).text());
+            });
+            outline[slug] = childElements;
+          } else if (options.preserveFormatting === false && options.returnJquery === true) {
+            outline[slug] = children;
+          } else if (options.preserveFormatting === true && options.returnJquery === false) {
+            //TODO
+          } else if (options.preserveFormatting === true && options.returnJquery === true) {
+            //TODO
+          }
+
         }
 
-        options.callback.call(outline, outline);
+        if (typeof options.tabletop_url !== 'undefined' && typeof Tabletop !== 'undefined') { // Grab Tabletop.js dataset as well
+          var tabletopData = new $.Deferred();
+          Tabletop.init({
+            key: options.tabletop_url,
+            simpleSheet: false,
+            callback: function(data, tt) {
+              tabletopData.resolve({data: data, tabletop: tt});
+            }
+          });
+
+          $.when(tabletopData).done(function(ttdata){
+            options.callback.call(outline, {copy: outline, data: ttdata});
+          });
+
+        } else {
+          options.callback.call(outline, {copy: outline});
+        }
       }
     });
   };
@@ -45,7 +74,11 @@
   // Static method default options.
   $.doctop.options = {
     callback: function(res) {console.log('You forgot to specify a callback...'); console.dir(res);},
-    url: ''
+    url: '',
+    tabletop_url: undefined,
+    preserveFormatting: false,
+    returnJquery: false,
+    simpleKeys: false
   };
 
 }(jQuery));
