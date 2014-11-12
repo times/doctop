@@ -91,6 +91,12 @@ Defaults to `false`.
 
 _(Coming soon)_
 
+## Roadmap/ToDos
+
++ Add the preserveFormatting option
++ Add support for other heading tags (h2-6)
++ Unit tests all up in hurr / up in hurr
+
 ## Release History
 
 ### 0.0.1 — initial release.
