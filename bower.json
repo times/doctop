@@ -1,6 +1,7 @@
 {
   "name": "doctop",
   "version": "0.0.1",
+  "main": "dist/jquery.doctop.js",
   "dependencies": {
     "speakingurl": "~0.16.0"
   },

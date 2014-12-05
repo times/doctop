@@ -7,8 +7,11 @@
   <script type="text/javascript">
     $.doctop({
       url: 'https://docs.google.com/document/d/1_zs07o2m1BQisqWT5WEk_aC4TFl9nIZgufc9IYeL64Y/pub',
-      simpleKeys: true,
-      callback: function(d){console.log(JSON.stringify(d, null, '  '));}
+      simpleKeys: false,
+      tabletop_url: undefined,
+      returnJquery: false,
+      preserveFormatting: false,
+      callback: function(d){console.dir(d);}
     });
   </script>
 </head>

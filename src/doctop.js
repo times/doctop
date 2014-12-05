@@ -25,29 +25,49 @@
                     .children()
                     .not('style'); // Don't need no stylesheets hurr!
 
-        var sections = root.filter('h1');
-        var outline = {};
-        for (var i = 0; i < sections.length; i++) {
-          var children;
-          if (i+1 <= sections.length) {
-            children = root.filter(sections[i]).after().nextUntil(sections[i+1]).filter(function(){return $(this).text().trim() !== '';});
+        var tree = {};
+        var currentTree = tree;
+        var i = 0;
+        var node = root[0];
+        var tagName, key;
+
+        while (node && node.nodeType === 1) {
+          tagName = node.tagName.toLowerCase();
+
+          switch(tagName) {
+            case 'h1':
+            case 'h2':
+            case 'h3':
+            case 'h4':
+            case 'h5':
+            case 'h6':
+              key = options.simpleKeys ? tagName + '_' + i : getSlug(node.textContent.trim(), {separator: '_'});
+              if (tagName === 'h1') {
+                currentTree = tree[key] = {};
+              } else {
+                currentTree = currentTree[key] = {};
+              }
+            break;
+
+            default:
+              if (node.innerHTML !== '<span></span>') {
+                i = typeof currentTree.length > 0 ? currentTree.length : 0;
+                key = tagName + '_' + i;
+                if (options.preserveFormatting === false && options.returnJquery === false) {
+                  currentTree[key] = $(node).text();
+                } else if (options.preserveFormatting === false && options.returnJquery === true) {
+                  currentTree[key] = $(node);
+                } else if (options.preserveFormatting === true && options.returnJquery === false) {
+                  //TODO
+                } else if (options.preserveFormatting === true && options.returnJquery === true) {
+                  //TODO
+                }
+              }
+            break;
           }
 
-          var slug = options.simpleKeys ? 'section_' + i : getSlug($(sections[i]).text(), {separator: '_'});
-          if (options.preserveFormatting === false && options.returnJquery === false) {
-            var childElements = [];
-            children.each(function(){
-              childElements.push($(this).text());
-            });
-            outline[slug] = childElements;
-          } else if (options.preserveFormatting === false && options.returnJquery === true) {
-            outline[slug] = children;
-          } else if (options.preserveFormatting === true && options.returnJquery === false) {
-            //TODO
-          } else if (options.preserveFormatting === true && options.returnJquery === true) {
-            //TODO
-          }
-
+          // Move to the next element
+          node = node.nextElementSibling;
         }
 
         if (typeof options.tabletop_url !== 'undefined' && typeof Tabletop !== 'undefined') { // Grab Tabletop.js dataset as well
@@ -61,11 +81,11 @@
           });
 
           $.when(tabletopData).done(function(ttdata){
-            options.callback.call(outline, {copy: outline, data: ttdata});
+            options.callback.call(tree, {copy: tree, data: ttdata});
           });
 
         } else {
-          options.callback.call(outline, {copy: outline});
+          options.callback.call(tree, {copy: tree});
         }
       }
     });
