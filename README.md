@@ -9,7 +9,7 @@ Download the [production version][min] or the [development version][max].
 [min]: https://raw.github.com/times/jquery-doctop/master/dist/jquery.doctop.min.js
 [max]: https://raw.github.com/times/jquery-doctop/master/dist/jquery.doctop.js
 
-Create a Google Docs document, using the "Heading 1" format to denote sections of the document.
+Create a Google Docs document, using proper header formats to denote sections of the document.
 Publish it to the web via File->Publish to the web->Publish.
 
 In your web page:
