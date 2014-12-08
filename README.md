@@ -108,4 +108,6 @@ _(Coming soon)_
 
 ## Release History
 
+### 0.0.2 - adds more Tabletop features.
+
 ### 0.0.1 — initial release.
