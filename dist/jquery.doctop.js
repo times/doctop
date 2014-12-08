@@ -1,4 +1,4 @@
-/*! doctop - v0.0.1 - 2014-11-12
+/*! doctop - v0.0.1 - 2014-12-08
 * https://github.com/times/doctop
 * Copyright (c) 2014 Ændrew Rininsland; Licensed MIT */
 (function() {
@@ -899,7 +899,6 @@
 })();
 
 /*jshint -W083*/
-/*global getSlug,console,Tabletop*/
 (function ($) {
 
   // Static method.
@@ -948,7 +947,8 @@
           var tabletopData = new $.Deferred();
           Tabletop.init({
             key: options.tabletop_url,
-            simpleSheet: false,
+            simpleSheet: options.tabletop_simplesheet,
+            proxy: options.tabletop_proxy,
             callback: function(data, tt) {
               tabletopData.resolve({data: data, tabletop: tt});
             }
@@ -970,6 +970,8 @@
     callback: function(res) {console.log('You forgot to specify a callback...'); console.dir(res);},
     url: '',
     tabletop_url: undefined,
+    tabletop_proxy: undefined,
+    tabletop_simplesheet: false,
     preserveFormatting: false,
     returnJquery: false,
     simpleKeys: false

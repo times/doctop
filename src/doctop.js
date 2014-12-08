@@ -5,7 +5,6 @@
  * Licensed under the MIT license.
  */
 /*jshint -W083*/
-/*global getSlug,console,Tabletop*/
 (function ($) {
 
   // Static method.
@@ -46,23 +45,30 @@
                 currentTree = tree[key] = {};
               } else {
                 currentTreeKey = Object.keys(currentTree);
-                console.dir(currentTreeKey);
                 currentTree = currentTree[key] = {};
               }
             break;
 
             default:
               if (node.innerHTML !== '<span></span>') {
-                i = typeof currentTree.length > 0 ? currentTree.length : 0;
+                i = Object.keys(currentTree).length > 0 ? Object.keys(currentTree).length : 0;
                 key = tagName + '_' + i;
                 if (options.preserveFormatting === false && options.returnJquery === false) {
                   currentTree[key] = $(node).text();
                 } else if (options.preserveFormatting === false && options.returnJquery === true) {
-                  currentTree[key] = $(node);
+                  if (node.nodeName === 'P') {
+                    currentTree[key] = $(node).text();
+                  } else {
+                    currentTree[key] = $(node).html();
+                  }
                 } else if (options.preserveFormatting === true && options.returnJquery === false) {
                   //TODO
                 } else if (options.preserveFormatting === true && options.returnJquery === true) {
-                  //TODO
+                  if (node.nodeName === 'P') {
+                    currentTree[key] = $(node.innerHTML).unwrap().html();
+                  } else {
+                    currentTree[key] = $(node).html();
+                  }
                 }
               }
             break;
@@ -76,7 +82,8 @@
           var tabletopData = new $.Deferred();
           Tabletop.init({
             key: options.tabletop_url,
-            simpleSheet: false,
+            simpleSheet: options.tabletop_simplesheet,
+            proxy: options.tabletop_proxy,
             callback: function(data, tt) {
               tabletopData.resolve({data: data, tabletop: tt});
             }
@@ -98,6 +105,8 @@
     callback: function(res) {console.log('You forgot to specify a callback...'); console.dir(res);},
     url: '',
     tabletop_url: undefined,
+    tabletop_proxy: undefined,
+    tabletop_simplesheet: false,
     preserveFormatting: false,
     returnJquery: false,
     simpleKeys: false

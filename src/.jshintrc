@@ -11,5 +11,11 @@
   "boss": true,
   "eqnull": true,
   "browser": true,
-  "predef": ["jQuery"]
+  "globals": {
+    "getSlug": true,
+    "console": true,
+    "Tabletop": true,
+    "jQuery": true
+  },
+  "loopfunc": false
 }

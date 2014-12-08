@@ -65,11 +65,20 @@ to get this URL.
 Asynchronous callback for the data. Takes one argument, the response, containing copy and any Tabletop data.
 The `this` context is the contents of `response.copy`.
 
-#### tabletop_url
+#### tabletop_url (default: `undefined`)
 
 If you have Tabletop.js included on the page, you can supply a published Google Sheets URL
 in order to only need one callback. The Tabletop response will be in the "data" key of the returned object,
 i.e, spreadsheet data in `data.data`, Tabletop object in `data.tabletop`.
+
+#### tabletop_proxy (default: `undefined`)
+
+If you're using Tabletop with Doctop, you can specify the Tabletop proxy here. Note this only works for
+Google Sheets that have been copied to S3 or elsewhere; Doctop proxy support [is still forthcoming](https://github.com/times/doctop/issues/1).
+
+#### tabletop_simplesheet (default: `false`)
+
+Use Tabletop's "simpleSheet" method when grabbing that data. This only really works if you only have one sheet.
 
 #### returnJquery (default: `false`)
 
@@ -98,5 +107,7 @@ _(Coming soon)_
 + Unit tests all up in hurr / up in hurr
 
 ## Release History
+
+### 0.0.2 - adds more Tabletop features.
 
 ### 0.0.1 — initial release.
