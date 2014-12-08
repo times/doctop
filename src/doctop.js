@@ -29,7 +29,7 @@
         var currentTree = tree;
         var i = 0;
         var node = root[0];
-        var tagName, key;
+        var tagName, key, currentTreeKey;
 
         while (node && node.nodeType === 1) {
           tagName = node.tagName.toLowerCase();
@@ -45,6 +45,8 @@
               if (tagName === 'h1') {
                 currentTree = tree[key] = {};
               } else {
+                currentTreeKey = Object.keys(currentTree);
+                console.dir(currentTreeKey);
                 currentTree = currentTree[key] = {};
               }
             break;
