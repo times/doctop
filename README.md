@@ -20,7 +20,7 @@ In your web page:
 <script>
   $.doctop({
     url: 'https://docs.google.com/document/d/1_zs07o2m1BQisqWT5WEk_aC4TFl9nIZgufc9IYeL64Y/pub',
-    callback: function(d){console.dir(d);},
+    callback: function(d){console.dir(d);}
   });
 </script>
 ```
