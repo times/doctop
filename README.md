@@ -33,15 +33,18 @@ Returns:
     "h1-1": [
       "This is a paragraph of text",
       "this is another paragraph",
-      "h2-1",
-      "this should be a child of h2-1, which should be a child of h1-1",
-      "h3-1",
-      "This should be a child of h3-1, which should be a child of h2-1"
+      "h2-1" [
+        "this should be a child of h2-1, which should be a child of h1-1",
+        "h3-1": [
+          "This should be a child of h3-1, which should be a child of h2-1"
+        ]
+      ]
     ],
     "h1-2": [
       "This should be a child of h1-2, which itself should be in the top level of the object.",
-      "h3-2",
-      "This should be a child of h3-2, which should be a child of h1-2"
+      "h3-2": [
+        "This should be a child of h3-2, which should be a child of h1-2"
+      ]
     ],
     "h1-3": [
       "This should be a child of h1-3",
@@ -80,21 +83,21 @@ Google Sheets that have been copied to S3 or elsewhere; Doctop proxy support [is
 
 Use Tabletop's "simpleSheet" method when grabbing that data. This only really works if you only have one sheet.
 
-#### returnJquery (default: `false`)
-
-This returns non-H1 elements as jQuery objects instead of either HTML or text.
-
 #### simpleKeys (default: `false`)
 
 Instead of creating keys for the sections that are the slugified version of the H1 text,
 return keys in the format `section_0` — this may be desirable if you have journalists
 who enjoy arbitrarily changing the H1 text on you!
 
-#### preserveFormatting (not implemented yet!)
+#### preserveFormatting (default: `true`)
 
 This will attempt to preserve text formatting from Google Docs. It will yield messier
 output because Google Docs loves to wrap everything under the sun in a `<span>` tag.
 Defaults to `false`.
+
+#### ~~returnJquery (default: `false`)~~ **DEPRECIATED in 1.0.0**
+
+~~This returns non-H1 elements as jQuery objects instead of either HTML or text.~~
 
 ## Examples
 
@@ -108,6 +111,8 @@ _(Coming soon)_
 
 ## Release History
 
-### 0.0.2 - adds more Tabletop features.
+### 1.0.0 - First stable release. Adds `preserveFormatting` option and tests; removes `returnJquery`.
 
-### 0.0.1 — initial release.
+### 0.0.2 - Adds more Tabletop features.
+
+### 0.0.1 — Initial release.

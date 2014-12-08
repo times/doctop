@@ -1,4 +1,4 @@
-/*! doctop - v0.0.1 - 2014-12-08
+/*! doctop - v1.0.0 - 2014-12-08
 * https://github.com/times/doctop
 * Copyright (c) 2014 Ændrew Rininsland; Licensed MIT */
 (function() {
@@ -898,7 +898,6 @@
     }
 })();
 
-/*jshint -W083*/
 (function ($) {
 
   // Static method.
@@ -918,32 +917,91 @@
                     .children()
                     .not('style'); // Don't need no stylesheets hurr!
 
-        var sections = root.filter('h1');
-        var outline = {};
-        for (var i = 0; i < sections.length; i++) {
-          var children;
-          if (i+1 <= sections.length) {
-            children = root.filter(sections[i]).after().nextUntil(sections[i+1]).filter(function(){return $(this).text().trim() !== '';});
-          }
 
-          var slug = options.simpleKeys ? 'section_' + i : getSlug($(sections[i]).text(), {separator: '_'});
-          if (options.preserveFormatting === false && options.returnJquery === false) {
-            var childElements = [];
-            children.each(function(){
-              childElements.push($(this).text());
-            });
-            outline[slug] = childElements;
-          } else if (options.preserveFormatting === false && options.returnJquery === true) {
-            outline[slug] = children;
-          } else if (options.preserveFormatting === true && options.returnJquery === false) {
-            //TODO
-          } else if (options.preserveFormatting === true && options.returnJquery === true) {
-            //TODO
-          }
-
+        // Replace spans with proper <strong> and <em> elements.
+        if (options.preserveFormatting === true) {
+          var textStyles = $(res).filter('#contents').children('style')[0].innerHTML;
+          var boldClass = /(\.[a-z0-9]+?)\{font-weight\:bold\}/gi.exec(textStyles)[1];
+          var italicClass = /(\.[a-z0-9]+?)\{font-style\:italic\}/gi.exec(textStyles)[1];
+          root.find('span' + boldClass).each(function(i, v){
+            $(v).replaceWith('<strong>'  + v.innerHTML + '</strong>');
+          });
+          root.find('span' + italicClass).each(function(i, v){
+            $(v).replaceWith('<em>' + v.innerHTML + '</em>');
+          });
         }
 
-        if (typeof options.tabletop_url !== 'undefined' && typeof Tabletop !== 'undefined') { // Grab Tabletop.js dataset as well
+        // Strip out all the stupid class-less <span> tags
+        $.grep(root.find('span'), function(v){
+          if (!$(v).hasClass('*')) {
+            if ($(v).text().length > 0) {
+              $(v).replaceWith(v.innerHTML);
+              return true;
+            }
+          }
+        });
+
+        // Remove &nbsp; and Unicode 160
+        root.each(function(i, v){
+          v.innerHTML = v.innerHTML.replace(/(?:\x0A|&nbsp;)/gi, ' ');
+        });
+
+        // Begin the main DOM walker!
+
+        var tree = {};
+        var currentTree = tree;
+        var i = 0;
+        var node = root[0];
+        var tagName, key, currentTreeKey;
+
+        while (node && node.nodeType === 1) {
+          tagName = node.tagName.toLowerCase();
+
+          // Handle headers
+          switch(tagName) {
+            case 'h1':
+            case 'h2':
+            case 'h3':
+            case 'h4':
+            case 'h5':
+            case 'h6':
+              key = options.simpleKeys ? tagName + '_' + i : getSlug(node.textContent.trim(), {separator: '_'});
+              if (tagName === 'h1') {
+                currentTree = tree[key] = {};
+              } else {
+                currentTreeKey = Object.keys(currentTree);
+                currentTree = currentTree[key] = {};
+              }
+            break;
+
+            // Handle paragraphs
+            default:
+              if (node.innerHTML !== '<span></span>') {
+                i = Object.keys(currentTree).length > 0 ? Object.keys(currentTree).length : 0;
+                key = tagName + '_' + i;
+                if (options.preserveFormatting === false) {
+                  if (node.nodeName === 'P') {
+                    currentTree[key] = $(node).text();
+                  } else {
+                    currentTree[key] = $(node).html();
+                  }
+                } else if (options.preserveFormatting === true) {
+                  if (node.nodeName === 'P') {
+                    currentTree[key] = node.innerHTML;
+                  } else {
+                    currentTree[key] = $(node).html();
+                  }
+                }
+              }
+            break;
+          }
+
+          // Move to the next element
+          node = node.nextElementSibling;
+        }
+
+        // Add Tabletop to output if requested
+        if (typeof options.tabletop_url !== 'undefined' && typeof Tabletop !== 'undefined') {
           var tabletopData = new $.Deferred();
           Tabletop.init({
             key: options.tabletop_url,
@@ -955,11 +1013,11 @@
           });
 
           $.when(tabletopData).done(function(ttdata){
-            options.callback.call(outline, {copy: outline, data: ttdata});
+            options.callback.call(tree, {copy: tree, data: ttdata});
           });
 
         } else {
-          options.callback.call(outline, {copy: outline});
+          options.callback.call(tree, {copy: tree});
         }
       }
     });
@@ -972,8 +1030,7 @@
     tabletop_url: undefined,
     tabletop_proxy: undefined,
     tabletop_simplesheet: false,
-    preserveFormatting: false,
-    returnJquery: false,
+    preserveFormatting: true,
     simpleKeys: false
   };
 
