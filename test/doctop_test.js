@@ -20,43 +20,51 @@
       throws(block, [expected], [message])
   */
 
-  // module('jQuery#awesome', {
-  //   // This will run before each test in this module.
-  //   setup: function() {
-  //     this.elems = $('#qunit-fixture').children();
-  //   }
-  // });
-  //
-  // test('is chainable', function() {
-  //   expect(1);
-  //   // Not a bad test to run on collection methods.
-  //   strictEqual(this.elems.awesome(), this.elems, 'should be chainable');
-  // });
-  //
-  // test('is awesome', function() {
-  //   expect(1);
-  //   strictEqual(this.elems.awesome().text(), 'awesome0awesome1awesome2', 'should be awesome');
-  // });
-  //
-  // module('jQuery.awesome');
-  //
-  // test('is awesome', function() {
-  //   expect(2);
-  //   strictEqual($.awesome(), 'awesome.', 'should be awesome');
-  //   strictEqual($.awesome({punctuation: '!'}), 'awesome!', 'should be thoroughly awesome');
-  // });
-  //
-  // module(':awesome selector', {
-  //   // This will run before each test in this module.
-  //   setup: function() {
-  //     this.elems = $('#qunit-fixture').children();
-  //   }
-  // });
-  //
-  // test('is awesome', function() {
-  //   expect(1);
-  //   // Use deepEqual & .get() when comparing jQuery objects.
-  //   deepEqual(this.elems.filter(':awesome').get(), this.elems.last().get(), 'knows awesome when it sees it');
-  // });
+  module('jQuery.doctop');
 
+  test('parses correctly', function(assert) {
+    var data = $.Deferred();
+    var done = assert.async();
+
+    $.doctop({
+      url: 'https://docs.google.com/document/d/1_zs07o2m1BQisqWT5WEk_aC4TFl9nIZgufc9IYeL64Y/pub',
+      callback: function(d) {
+        data.resolve(d);
+      }
+    });
+
+    data.then(function(d){
+      expect(4);
+      // console.dir(d);
+      var topLevel = Object.keys(d.copy);
+      assert.strictEqual(topLevel.length, 3, 'Should be three top-level elements.');
+
+      assert.strictEqual(d.copy['h1-1'].length, 6, 'First section should have 6 children.');
+      assert.strictEqual(d.copy['h1-2'].length, 3, 'Second section should have 3 children.');
+      assert.strictEqual(d.copy['h1-3'].length, 2, 'Third section should have 2 children.');
+
+      done();
+    });
+  });
+
+  test('can get Tabletop data correctly', function(assert){
+    var data = $.Deferred();
+    var done = assert.async();
+
+    $.doctop({
+      url: 'https://docs.google.com/document/d/1_zs07o2m1BQisqWT5WEk_aC4TFl9nIZgufc9IYeL64Y/pub',
+      tabletop_url: 'https://docs.google.com/spreadsheets/d/1u5u9VhFKIDItumQrOsqW01d2htQGfJrlyuzONolSDcM/pubhtml',
+      callback: function(d) {
+        data.resolve(d);
+      }
+    });
+
+    data.then(function(d){
+      expect(3);
+      assert.strictEqual(typeof d.data, 'object', 'There should be a data object.');
+      assert.strictEqual(typeof d.data.data, 'object', 'There should be a Tabletop data object.');
+      assert.strictEqual(typeof d.data.tabletop, 'object', 'There should be a Tabletop object.');
+      done();
+    });
+  });
 }(jQuery));
