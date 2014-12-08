@@ -27,6 +27,9 @@
     "notDeepEqual",
     "strictEqual",
     "notStrictEqual",
-    "throws"
+    "throws",
+    "console",
+    "getSlug",
+    "Tabletop"
   ]
 }
