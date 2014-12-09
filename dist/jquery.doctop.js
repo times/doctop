@@ -931,7 +931,7 @@
           }
 
           if (italicClass.length >  0) {
-            root.find('span' + italicClass).each(function(i, v){
+            root.find('span' + italicClass[1]).each(function(i, v){
               $(v).replaceWith('<em>' + v.innerHTML + '</em>');
             });
           }
