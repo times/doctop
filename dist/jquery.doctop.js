@@ -1,4 +1,4 @@
-/*! doctop - v1.0.0 - 2014-12-08
+/*! doctop - v1.0.0 - 2014-12-09
 * https://github.com/times/doctop
 * Copyright (c) 2014 Ændrew Rininsland; Licensed MIT */
 (function() {
@@ -921,8 +921,8 @@
         // Replace spans with proper <strong> and <em> elements.
         if (options.preserveFormatting === true) {
           var textStyles = $(res).filter('#contents').children('style')[0].innerHTML;
-          var boldClass = /(\.[a-z0-9]+?)\{font-weight\:bold\}/gi.exec(textStyles)[1];
-          var italicClass = /(\.[a-z0-9]+?)\{font-style\:italic\}/gi.exec(textStyles)[1];
+          var boldClass = /(\.[a-z0-9]+?)\{[^{}]*?font-weight:bold[^{}]*?\}/gi.exec(textStyles)[1];
+          var italicClass = /(\.[a-z0-9]+?)\{[^{}]*?font-style\:italic[^{}]*?\}/gi.exec(textStyles)[1];
           root.find('span' + boldClass).each(function(i, v){
             $(v).replaceWith('<strong>'  + v.innerHTML + '</strong>');
           });
