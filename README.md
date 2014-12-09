@@ -95,6 +95,10 @@ This will attempt to preserve text formatting from Google Docs. It will yield me
 output because Google Docs loves to wrap everything under the sun in a `<span>` tag.
 Defaults to `false`.
 
+#### cache (default: `true`)
+
+This enables `jQuery.ajax()`'s cache feature.
+
 #### ~~returnJquery (default: `false`)~~ **DEPRECIATED in 1.0.0**
 
 ~~This returns non-H1 elements as jQuery objects instead of either HTML or text.~~

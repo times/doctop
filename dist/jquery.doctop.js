@@ -1,4 +1,4 @@
-/*! doctop - v1.0.0 - 2014-12-09
+/*! doctop - v1.0.1 - 2014-12-09
 * https://github.com/times/doctop
 * Copyright (c) 2014 Ændrew Rininsland; Licensed MIT */
 (function() {
@@ -909,7 +909,7 @@
     $.ajax({
       url: options.url,
       type: 'GET',
-      cache: false,
+      cache: options.cache,
       crossDomain: true,
       success: function(res) {
         var root = $(res)
@@ -1031,7 +1031,8 @@
     tabletop_proxy: undefined,
     tabletop_simplesheet: false,
     preserveFormatting: true,
-    simpleKeys: false
+    simpleKeys: false,
+    cache: true
   };
 
 }(jQuery));

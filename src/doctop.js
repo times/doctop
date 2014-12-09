@@ -15,7 +15,7 @@
     $.ajax({
       url: options.url,
       type: 'GET',
-      cache: false,
+      cache: options.cache,
       crossDomain: true,
       success: function(res) {
         var root = $(res)
@@ -137,7 +137,8 @@
     tabletop_proxy: undefined,
     tabletop_simplesheet: false,
     preserveFormatting: true,
-    simpleKeys: false
+    simpleKeys: false,
+    cache: true
   };
 
 }(jQuery));
