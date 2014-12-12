@@ -921,14 +921,21 @@
         // Replace spans with proper <strong> and <em> elements.
         if (options.preserveFormatting === true) {
           var textStyles = $(res).filter('#contents').children('style')[0].innerHTML;
-          var boldClass = /(\.[a-z0-9]+?)\{[^{}]*?font-weight:bold[^{}]*?\}/gi.exec(textStyles)[1];
-          var italicClass = /(\.[a-z0-9]+?)\{[^{}]*?font-style\:italic[^{}]*?\}/gi.exec(textStyles)[1];
-          root.find('span' + boldClass).each(function(i, v){
-            $(v).replaceWith('<strong>'  + v.innerHTML + '</strong>');
-          });
-          root.find('span' + italicClass).each(function(i, v){
-            $(v).replaceWith('<em>' + v.innerHTML + '</em>');
-          });
+          var boldClass = /(\.[a-z0-9]+?)\{[^{}]*?font-weight:bold[^{}]*?\}/gi.exec(textStyles);
+          var italicClass = /(\.[a-z0-9]+?)\{[^{}]*?font-style\:italic[^{}]*?\}/gi.exec(textStyles);
+
+          if (boldClass.length > 0) {
+            root.find('span' + boldClass[1]).each(function(i, v){
+              $(v).replaceWith('<strong>'  + v.innerHTML + '</strong>');
+            });
+          }
+
+          if (italicClass.length >  0) {
+            root.find('span' + italicClass[1]).each(function(i, v){
+              $(v).replaceWith('<em>' + v.innerHTML + '</em>');
+            });
+          }
+
         }
 
         // Strip out all the stupid class-less <span> tags
