@@ -1,4 +1,4 @@
-# Doctop
+# Doctop [![Build Status](https://travis-ci.org/times/doctop.svg)](https://travis-ci.org/times/doctop)
 
 A jQuery plugin for consuming Google Docs via JSON
 
