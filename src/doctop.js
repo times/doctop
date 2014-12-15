@@ -28,15 +28,15 @@
         if (options.preserveFormatting === true) {
           var textStyles = $(res).filter('#contents').children('style')[0].innerHTML;
           var boldClass = /(\.[a-z0-9]+?)\{[^{}]*?font-weight:bold[^{}]*?\}/gi.exec(textStyles);
-          var italicClass = /(\.[a-z0-9]+?)\{[^{}]*?font-style\:italic[^{}]*?\}/gi.exec(textStyles);
+          var italicClass = /(\.[a-z0-9]+?)\{[^{}]*?font-style:italic[^{}]*?\}/gi.exec(textStyles);
 
-          if (boldClass.length > 0) {
+          if (boldClass && boldClass.length > 0) {
             root.find('span' + boldClass[1]).each(function(i, v){
               $(v).replaceWith('<strong>'  + v.innerHTML + '</strong>');
             });
           }
 
-          if (italicClass.length >  0) {
+          if (boldClass && italicClass.length >  0) {
             root.find('span' + italicClass[1]).each(function(i, v){
               $(v).replaceWith('<em>' + v.innerHTML + '</em>');
             });
@@ -65,7 +65,7 @@
         var currentTree = tree;
         var i = 0;
         var node = root[0];
-        var tagName, key, currentTreeKey;
+        var tagName, key;
 
         while (node && node.nodeType === 1) {
           tagName = node.tagName.toLowerCase();
@@ -80,10 +80,21 @@
             case 'h6':
               key = options.simpleKeys ? tagName + '_' + i : getSlug(node.textContent.trim(), {separator: '_'});
               if (tagName === 'h1') {
-                currentTree = tree[key] = {};
+                tree[key] = {
+                  index: Object.keys(tree).length,
+                  content: node.textContent.trim(),
+                  children: {}
+                };
+
+                currentTree = tree[key].children;
               } else {
-                currentTreeKey = Object.keys(currentTree);
-                currentTree = currentTree[key] = {};
+                currentTree[key] = {
+                  index: Object.keys(currentTree).length,
+                  content: node.textContent.trim(),
+                  children: {}
+                };
+
+                currentTree = currentTree[key].children;
               }
             break;
 
@@ -92,19 +103,12 @@
               if (node.innerHTML !== '<span></span>') {
                 i = Object.keys(currentTree).length > 0 ? Object.keys(currentTree).length : 0;
                 key = tagName + '_' + i;
-                if (options.preserveFormatting === false) {
-                  if (node.nodeName === 'P') {
-                    currentTree[key] = $(node).text();
-                  } else {
-                    currentTree[key] = $(node).html();
-                  }
-                } else if (options.preserveFormatting === true) {
-                  if (node.nodeName === 'P') {
-                    currentTree[key] = node.innerHTML;
-                  } else {
-                    currentTree[key] = $(node).html();
-                  }
-                }
+
+                currentTree[key] = {
+                  content: $(node).text(),
+                  content_html: node.innerHTML,
+                  index: Object.keys(currentTree).length
+                };
               }
             break;
           }
@@ -129,6 +133,7 @@
             options.callback.call(tree, {copy: tree, data: ttdata});
           });
 
+        // Otherwise return tree
         } else {
           options.callback.call(tree, {copy: tree});
         }
