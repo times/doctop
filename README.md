@@ -2,6 +2,17 @@
 
 A jQuery plugin for consuming Google Docs via JSON
 
+## NOTE ON DOCTOP 2.0.0
+
+This is a slightly-rewritten version of Doctop that tries to redo the hierarchical
+infrastructure proposed in 1.0.0. It creates a DOM-like tree, wherein headers
+have `children` objects, containing either more headers or paragraphs. Also new
+are `index` properties on each item, allowing things to be ordered or converted
+into ordered arrays (times/doctop#6).
+
+The major version number change is because this breaks backwards compatibility.
+Or it might, depending on what I decide when merging to master.
+
 ## Getting Started
 
 Download the [production version][min] or the [development version][max].

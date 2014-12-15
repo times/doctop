@@ -98,7 +98,6 @@
     });
 
     data.then(function(d){
-      console.log(d);
       expect(3);
       assert.strictEqual(typeof d.data, 'object', 'There should be a data object.');
       assert.strictEqual(typeof d.data.data, 'object', 'There should be a Tabletop data object.');
