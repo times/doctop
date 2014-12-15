@@ -40,14 +40,14 @@
       var topLevel = Object.keys(d.copy);
 
       assert.strictEqual(topLevel.length, 3, 'Should be three top-level elements.');
-      assert.strictEqual(d.copy['h1-1']['p_0'], 'This is a paragraph of text', 'Should read: "This is a paragraph of text"');
-      assert.strictEqual(d.copy['h1-1']['p_1'], 'this is another paragraph', 'Should read: "this is another paragraph"');
-      assert.strictEqual(d.copy['h1-1']['h2-1']['p_0'], 'this should be a child of h2-1, which should be a child of h1-1', 'Should read: "this should be a child of h2-1, which should be a child of h1-1"');
-      assert.strictEqual(d.copy['h1-1']['h2-1']['h3-1']['p_0'], 'This should be a child of h3-1, which should be a child of h2-1', 'Should read: "This should be a child of h3-1, which should be a child of h2-1"');
-      assert.strictEqual(d.copy['h1-2']['p_0'], 'This should be a child of h1-2, which itself should be in the top level of the object.', 'Should read: "This should be a child of h1-2, which itself should be in the top level of the object."');
-      assert.strictEqual(d.copy['h1-2']['h3-2']['p_0'], 'This should be a child of h3-2, which should be a child of h1-2', 'Should read: "This should be a child of h3-2, which should be a child of h1-2"');
-      assert.strictEqual(d.copy['h1-3']['p_0'], 'This should be a child of h1-3', 'Should read: "This should be a child of h1-3"');
-      assert.strictEqual(d.copy['h1-3']['p_1'], 'Anothre child of h1-3', 'Should read: "Anothre child of h1-3"');
+      assert.strictEqual(d.copy['h1-1'].children['p_0'].content, 'This is a paragraph of text', 'Should read: "This is a paragraph of text"');
+      assert.strictEqual(d.copy['h1-1'].children['p_1'].content, 'this is another paragraph', 'Should read: "this is another paragraph"');
+      assert.strictEqual(d.copy['h1-1'].children['h2-1'].children['p_0'].content, 'this should be a child of h2-1, which should be a child of h1-1', 'Should read: "this should be a child of h2-1, which should be a child of h1-1"');
+      assert.strictEqual(d.copy['h1-1'].children['h2-1'].children['h3-1'].children['p_0'].content, 'This should be a child of h3-1, which should be a child of h2-1', 'Should read: "This should be a child of h3-1, which should be a child of h2-1"');
+      assert.strictEqual(d.copy['h1-2'].children['p_0'].content, 'This should be a child of h1-2, which itself should be in the top level of the object.', 'Should read: "This should be a child of h1-2, which itself should be in the top level of the object."');
+      assert.strictEqual(d.copy['h1-2'].children['h3-2'].children['p_0'].content, 'This should be a child of h3-2, which should be a child of h1-2', 'Should read: "This should be a child of h3-2, which should be a child of h1-2"');
+      assert.strictEqual(d.copy['h1-3'].children['p_0'].content, 'This should be a child of h1-3', 'Should read: "This should be a child of h1-3"');
+      assert.strictEqual(d.copy['h1-3'].children['p_1'].content, 'Anothre child of h1-3', 'Should read: "Anothre child of h1-3"');
 
       done();
     });
@@ -71,14 +71,14 @@
       var topLevel = Object.keys(d.copy);
 
       assert.strictEqual(topLevel.length, 3, 'Should be three top-level elements.');
-      assert.strictEqual(d.copy['h1-1']['p_0'], 'This is a paragraph of text', 'Should read: "This is a paragraph of text"');
-      assert.strictEqual(d.copy['h1-1']['p_1'], 'this is another paragraph', 'Should read: "this is another paragraph"');
-      assert.strictEqual(d.copy['h1-1']['h2-1']['p_0'], 'this should be a child of h2-1, which should be a child of h1-1', 'Should read: "this should be a child of h2-1, which should be a child of h1-1"');
-      assert.strictEqual(d.copy['h1-1']['h2-1']['h3-1']['p_0'], 'This should be a <em>child</em> of h3-1, which should be a <em>child</em> of h2-1', 'Should read: "This should be a <em>child</em> of h3-1, which should be a <em>child</em> of h2-1"');
-      assert.strictEqual(d.copy['h1-2']['p_0'], 'This should be a <em>child</em> of h1-2, which itself should be in the <strong>top level</strong> of the object.', 'Should read: "This should be a <em>child</em> of h1-2, which itself should be in the <strong>top level</strong> of the object."');
-      assert.strictEqual(d.copy['h1-2']['h3-2']['p_0'], 'This should be a child of h3-2, which should be a child of h1-2', 'Should read: "This should be a child of h3-2, which should be a child of h1-2"');
-      assert.strictEqual(d.copy['h1-3']['p_0'], 'This should be a child of h1-3', 'Should read: "This should be a child of h1-3"');
-      assert.strictEqual(d.copy['h1-3']['p_1'], 'Anothre child of h1-3', 'Should read: "Anothre child of h1-3"');
+      assert.strictEqual(d.copy['h1-1'].children['p_0'].content, 'This is a paragraph of text', 'Should read: "This is a paragraph of text"');
+      assert.strictEqual(d.copy['h1-1'].children['p_1'].content, 'this is another paragraph', 'Should read: "this is another paragraph"');
+      assert.strictEqual(d.copy['h1-1'].children['h2-1'].children['p_0'].content, 'this should be a child of h2-1, which should be a child of h1-1', 'Should read: "this should be a child of h2-1, which should be a child of h1-1"');
+      assert.strictEqual(d.copy['h1-1'].children['h2-1'].children['h3-1'].children['p_0'].content_html, 'This should be a <em>child</em> of h3-1, which should be a <em>child</em> of h2-1', 'Should read: "This should be a <em>child</em> of h3-1, which should be a <em>child</em> of h2-1"');
+      assert.strictEqual(d.copy['h1-2'].children['p_0'].content_html, 'This should be a <em>child</em> of h1-2, which itself should be in the <strong>top level</strong> of the object.', 'Should read: "This should be a <em>child</em> of h1-2, which itself should be in the <strong>top level</strong> of the object."');
+      assert.strictEqual(d.copy['h1-2'].children['h3-2'].children['p_0'].content, 'This should be a child of h3-2, which should be a child of h1-2', 'Should read: "This should be a child of h3-2, which should be a child of h1-2"');
+      assert.strictEqual(d.copy['h1-3'].children['p_0'].content, 'This should be a child of h1-3', 'Should read: "This should be a child of h1-3"');
+      assert.strictEqual(d.copy['h1-3'].children['p_1'].content, 'Anothre child of h1-3', 'Should read: "Anothre child of h1-3"');
 
       done();
     });
@@ -98,6 +98,7 @@
     });
 
     data.then(function(d){
+      console.log(d);
       expect(3);
       assert.strictEqual(typeof d.data, 'object', 'There should be a data object.');
       assert.strictEqual(typeof d.data.data, 'object', 'There should be a Tabletop data object.');
