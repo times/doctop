@@ -1,4 +1,4 @@
-/*! doctop - v1.0.1 - 2014-12-09
+/*! doctop - v1.0.1 - 2014-12-15
 * https://github.com/times/doctop
 * Copyright (c) 2014 Ændrew Rininsland; Licensed MIT */
 (function() {
@@ -903,132 +903,153 @@
   // Static method.
   $.doctop = function (options) {
     // Override default options with passed-in options.
-    options = $.extend({}, $.doctop.options, options);
+    this.options = $.extend({}, $.doctop.options, options);
 
-    // Return something awesome.
+    this._parseAndCleanDOM = function(res) {
+      var root = $(res)
+                  .filter('#contents')
+                  .children()
+                  .not('style'); // Don't need no stylesheets hurr!
+
+      // Replace spans with proper <strong> and <em> elements.
+      if (options.preserveFormatting === true) {
+        var textStyles = $(res).filter('#contents').children('style')[0].innerHTML;
+        var boldClass = /(\.[a-z0-9]+?)\{[^{}]*?font-weight:bold[^{}]*?\}/gi.exec(textStyles);
+        var italicClass = /(\.[a-z0-9]+?)\{[^{}]*?font-style:italic[^{}]*?\}/gi.exec(textStyles);
+
+        if (boldClass && boldClass.length > 0) {
+          root.find('span' + boldClass[1]).each(function(i, v){
+            $(v).replaceWith('<strong>'  + v.innerHTML + '</strong>');
+          });
+        }
+
+        if (boldClass && italicClass.length >  0) {
+          root.find('span' + italicClass[1]).each(function(i, v){
+            $(v).replaceWith('<em>' + v.innerHTML + '</em>');
+          });
+        }
+
+      }
+
+      // Strip out all the stupid class-less <span> tags
+      $.grep(root.find('span'), function(v){
+        if (!$(v).hasClass('*')) {
+          if ($(v).text().length > 0) {
+            $(v).replaceWith(v.innerHTML);
+            return true;
+          }
+        }
+      });
+
+      // Remove &nbsp; and Unicode 160
+      root.each(function(i, v){
+        v.innerHTML = v.innerHTML.replace(/(?:\x0A|&nbsp;)/gi, ' ');
+      });
+
+      return root;
+    };
+
+    this._parseDOMIntoTree = function(root) {
+      // Begin the main DOM walker!
+
+      var tree = {};
+      var currentTree = tree;
+      var i = 0;
+      var node = root[0];
+      var tagName, key;
+
+      while (node && node.nodeType === 1) {
+        tagName = node.tagName.toLowerCase();
+
+        // Handle headers
+        switch(tagName) {
+          case 'h1':
+          case 'h2':
+          case 'h3':
+          case 'h4':
+          case 'h5':
+          case 'h6':
+            key = options.simpleKeys ? tagName + '_' + i : getSlug(node.textContent.trim(), {separator: '_'});
+            if (tagName === 'h1') {
+              tree[key] = {
+                index: Object.keys(tree).length,
+                content: node.textContent.trim(),
+                children: {}
+              };
+
+              currentTree = tree[key].children;
+            } else {
+              currentTree[key] = {
+                index: Object.keys(currentTree).length,
+                content: node.textContent.trim(),
+                children: {}
+              };
+
+              currentTree = currentTree[key].children;
+            }
+          break;
+
+          // Handle paragraphs
+          default:
+            if (node.innerHTML !== '<span></span>') {
+              i = Object.keys(currentTree).length > 0 ? Object.keys(currentTree).length : 0;
+              key = tagName + '_' + i;
+
+              currentTree[key] = {
+                content: $(node).text(),
+                content_html: node.innerHTML,
+                index: Object.keys(currentTree).length
+              };
+            }
+          break;
+        } //end switch
+
+        // Move to the next element
+        node = node.nextElementSibling;
+      } // end while
+
+      return tree;
+    }; // end this._parseDOMIntoTree
+
+    this._doCallbacks = function(tree) {
+      // Add Tabletop to output if requested
+      if (typeof options.tabletop_url !== 'undefined' && typeof Tabletop !== 'undefined') {
+        var tabletopData = new $.Deferred();
+        Tabletop.init({
+          key: this.options.tabletop_url,
+          simpleSheet: this.options.tabletop_simplesheet,
+          proxy: this.options.tabletop_proxy,
+          callback: function(data, tt) {
+            tabletopData.resolve({data: data, tabletop: tt});
+          }
+        });
+
+        $.when(tabletopData).done($.proxy(function(ttdata){
+          options.callback.call(tree, {copy: tree, data: ttdata});
+        }, this));
+
+      // Otherwise return tree
+      } else {
+        options.callback.call(tree, {copy: tree});
+      }
+    };
+
+    // Main Constructor AJAX call
     $.ajax({
-      url: options.url,
+      context: this,
+      url: this.options.url,
       type: 'GET',
-      cache: options.cache,
+      cache: this.options.cache,
       crossDomain: true,
       success: function(res) {
-        var root = $(res)
-                    .filter('#contents')
-                    .children()
-                    .not('style'); // Don't need no stylesheets hurr!
-
-
-        // Replace spans with proper <strong> and <em> elements.
-        if (options.preserveFormatting === true) {
-          var textStyles = $(res).filter('#contents').children('style')[0].innerHTML;
-          var boldClass = /(\.[a-z0-9]+?)\{[^{}]*?font-weight:bold[^{}]*?\}/gi.exec(textStyles);
-          var italicClass = /(\.[a-z0-9]+?)\{[^{}]*?font-style\:italic[^{}]*?\}/gi.exec(textStyles);
-
-          if (boldClass.length > 0) {
-            root.find('span' + boldClass[1]).each(function(i, v){
-              $(v).replaceWith('<strong>'  + v.innerHTML + '</strong>');
-            });
-          }
-
-          if (italicClass.length >  0) {
-            root.find('span' + italicClass[1]).each(function(i, v){
-              $(v).replaceWith('<em>' + v.innerHTML + '</em>');
-            });
-          }
-
-        }
-
-        // Strip out all the stupid class-less <span> tags
-        $.grep(root.find('span'), function(v){
-          if (!$(v).hasClass('*')) {
-            if ($(v).text().length > 0) {
-              $(v).replaceWith(v.innerHTML);
-              return true;
-            }
-          }
-        });
-
-        // Remove &nbsp; and Unicode 160
-        root.each(function(i, v){
-          v.innerHTML = v.innerHTML.replace(/(?:\x0A|&nbsp;)/gi, ' ');
-        });
-
-        // Begin the main DOM walker!
-
-        var tree = {};
-        var currentTree = tree;
-        var i = 0;
-        var node = root[0];
-        var tagName, key, currentTreeKey;
-
-        while (node && node.nodeType === 1) {
-          tagName = node.tagName.toLowerCase();
-
-          // Handle headers
-          switch(tagName) {
-            case 'h1':
-            case 'h2':
-            case 'h3':
-            case 'h4':
-            case 'h5':
-            case 'h6':
-              key = options.simpleKeys ? tagName + '_' + i : getSlug(node.textContent.trim(), {separator: '_'});
-              if (tagName === 'h1') {
-                currentTree = tree[key] = {};
-              } else {
-                currentTreeKey = Object.keys(currentTree);
-                currentTree = currentTree[key] = {};
-              }
-            break;
-
-            // Handle paragraphs
-            default:
-              if (node.innerHTML !== '<span></span>') {
-                i = Object.keys(currentTree).length > 0 ? Object.keys(currentTree).length : 0;
-                key = tagName + '_' + i;
-                if (options.preserveFormatting === false) {
-                  if (node.nodeName === 'P') {
-                    currentTree[key] = $(node).text();
-                  } else {
-                    currentTree[key] = $(node).html();
-                  }
-                } else if (options.preserveFormatting === true) {
-                  if (node.nodeName === 'P') {
-                    currentTree[key] = node.innerHTML;
-                  } else {
-                    currentTree[key] = $(node).html();
-                  }
-                }
-              }
-            break;
-          }
-
-          // Move to the next element
-          node = node.nextElementSibling;
-        }
-
-        // Add Tabletop to output if requested
-        if (typeof options.tabletop_url !== 'undefined' && typeof Tabletop !== 'undefined') {
-          var tabletopData = new $.Deferred();
-          Tabletop.init({
-            key: options.tabletop_url,
-            simpleSheet: options.tabletop_simplesheet,
-            proxy: options.tabletop_proxy,
-            callback: function(data, tt) {
-              tabletopData.resolve({data: data, tabletop: tt});
-            }
-          });
-
-          $.when(tabletopData).done(function(ttdata){
-            options.callback.call(tree, {copy: tree, data: ttdata});
-          });
-
-        } else {
-          options.callback.call(tree, {copy: tree});
-        }
+        var root = this._parseAndCleanDOM(res);
+        var tree = this._parseDOMIntoTree(root);
+        this._doCallbacks(tree);
       }
     });
-  };
+
+
+  }; // end $.doctop
 
   // Static method default options.
   $.doctop.options = {
