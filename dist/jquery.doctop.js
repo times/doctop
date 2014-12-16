@@ -1,4 +1,4 @@
-/*! doctop - v1.0.1 - 2014-12-15
+/*! doctop - v1.0.1 - 2014-12-16
 * https://github.com/times/doctop
 * Copyright (c) 2014 Ændrew Rininsland; Licensed MIT */
 (function() {
@@ -906,14 +906,29 @@
     this.options = $.extend({}, $.doctop.options, options);
 
     this._parseAndCleanDOM = function(res) {
-      var root = $(res)
-                  .filter('#contents')
-                  .children()
-                  .not('style'); // Don't need no stylesheets hurr!
+      var root;
+      if (this.options.staticExport) {
+        root = $(res)
+                .not('meta')
+                .not('style')
+                .not('title');
+      } else {
+        root = $(res)
+        .filter('#contents')
+        .children()
+        .not('style'); // Don't need no stylesheets hurr!
+      }
 
       // Replace spans with proper <strong> and <em> elements.
       if (options.preserveFormatting === true) {
-        var textStyles = $(res).filter('#contents').children('style')[0].innerHTML;
+        var textStyles;
+        if (this.options.staticExport) {
+          textStyles = $(res).filter('style')[0].innerHTML;
+        } else {
+          textStyles = $(res).filter('#contents').children('style')[0].innerHTML;
+        }
+
+
         var boldClass = /(\.[a-z0-9]+?)\{[^{}]*?font-weight:bold[^{}]*?\}/gi.exec(textStyles);
         var italicClass = /(\.[a-z0-9]+?)\{[^{}]*?font-style:italic[^{}]*?\}/gi.exec(textStyles);
 
@@ -1060,7 +1075,8 @@
     tabletop_simplesheet: false,
     preserveFormatting: true,
     simpleKeys: false,
-    cache: true
+    cache: true,
+    staticExport: false
   };
 
 }(jQuery));
