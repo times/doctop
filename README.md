@@ -110,6 +110,11 @@ Defaults to `false`.
 
 This enables `jQuery.ajax()`'s cache feature.
 
+#### staticExport (default: `false`)
+
+This allows the parser to consume pages created via Google Docs' "Download as Web page (.html, zipped)"
+feature. For those times when you just don't want to publish a confidential document to the broad intarwebz.
+
 #### ~~returnJquery (default: `false`)~~ **DEPRECIATED in 1.0.0**
 
 ~~This returns non-H1 elements as jQuery objects instead of either HTML or text.~~
