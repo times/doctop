@@ -26,39 +26,28 @@
       }
 
       // Replace spans with proper <strong> and <em> elements.
-      if (options.preserveFormatting === true) {
-        var textStyles;
-        if (this.options.staticExport) {
-          textStyles = $(res).filter('style')[0].innerHTML;
-        } else {
-          textStyles = $(res).filter('#contents').children('style')[0].innerHTML;
-        }
-
-
+      if (this.options.preserveFormatting || this.options.fancyOutput) {
+        var textStyles = this.options.staticExport ? $(res).filter('style')[0].innerHTML : $(res).filter('#contents').children('style')[0].innerHTML;
         var boldClass = /(\.[a-z0-9]+?)\{[^{}]*?font-weight:bold[^{}]*?\}/gi.exec(textStyles);
         var italicClass = /(\.[a-z0-9]+?)\{[^{}]*?font-style:italic[^{}]*?\}/gi.exec(textStyles);
-
         if (boldClass && boldClass.length > 0) {
           root.find('span' + boldClass[1]).each(function(i, v){
             $(v).replaceWith('<strong>'  + v.innerHTML + '</strong>');
           });
         }
 
-        if (boldClass && italicClass.length >  0) {
+        if (italicClass && italicClass.length >  0) {
           root.find('span' + italicClass[1]).each(function(i, v){
             $(v).replaceWith('<em>' + v.innerHTML + '</em>');
           });
         }
-
       }
 
       // Strip out all the stupid class-less <span> tags
       $.grep(root.find('span'), function(v){
-        if (!$(v).hasClass('*')) {
-          if ($(v).text().length > 0) {
-            $(v).replaceWith(v.innerHTML);
-            return true;
-          }
+        if ($(v).text().length > 0) {
+          $(v).replaceWith(v.innerHTML);
+          return true;
         }
       });
 
@@ -71,6 +60,34 @@
     };
 
     this._parseDOMIntoTree = function(root) {
+      var options = this.options;
+      var _returnNode = function(tree, node) {
+        if (options.fancyOutput) {
+          return {
+            index: Object.keys(tree).length,
+            content: node.textContent.trim(),
+            children: {}
+          };
+        } else {
+          return {};
+        }
+      };
+
+      var _returnParagraph = function(node, currentTree) {
+        if (options.fancyOutput) {
+          return {
+            content: $(node).text(),
+            content_html: node.innerHTML,
+            index: Object.keys(currentTree).length
+          };
+        } else if (options.preserveFormatting) {
+          return node.innerHTML;
+        } else {
+          return $(node).text();
+        }
+
+      };
+
       // Begin the main DOM walker!
 
       var tree = {};
@@ -78,7 +95,6 @@
       var i = 0;
       var node = root[0];
       var tagName, key;
-
       while (node && node.nodeType === 1) {
         tagName = node.tagName.toLowerCase();
 
@@ -92,21 +108,11 @@
           case 'h6':
             key = options.simpleKeys ? tagName + '_' + i : getSlug(node.textContent.trim(), {separator: '_'});
             if (tagName === 'h1') {
-              tree[key] = {
-                index: Object.keys(tree).length,
-                content: node.textContent.trim(),
-                children: {}
-              };
-
-              currentTree = tree[key].children;
+              tree[key] = _returnNode(tree, node);
+              currentTree = options.fancyOutput ? tree[key].children : tree[key];
             } else {
-              currentTree[key] = {
-                index: Object.keys(currentTree).length,
-                content: node.textContent.trim(),
-                children: {}
-              };
-
-              currentTree = currentTree[key].children;
+              currentTree[key] = _returnNode(currentTree, node);
+              currentTree = options.fancyOutput ? currentTree[key].children : currentTree[key];
             }
           break;
 
@@ -115,12 +121,7 @@
             if (node.innerHTML !== '<span></span>') {
               i = Object.keys(currentTree).length > 0 ? Object.keys(currentTree).length : 0;
               key = tagName + '_' + i;
-
-              currentTree[key] = {
-                content: $(node).text(),
-                content_html: node.innerHTML,
-                index: Object.keys(currentTree).length
-              };
+              currentTree[key] = _returnParagraph(node, currentTree);
             }
           break;
         } //end switch
@@ -134,7 +135,7 @@
 
     this._doCallbacks = function(tree) {
       // Add Tabletop to output if requested
-      if (typeof options.tabletop_url !== 'undefined' && typeof Tabletop !== 'undefined') {
+      if (typeof this.options.tabletop_url !== 'undefined' && typeof Tabletop !== 'undefined') {
         var tabletopData = new $.Deferred();
         Tabletop.init({
           key: this.options.tabletop_url,
@@ -146,12 +147,12 @@
         });
 
         $.when(tabletopData).done($.proxy(function(ttdata){
-          options.callback.call(tree, {copy: tree, data: ttdata});
+          this.options.callback.call(tree, {copy: tree, data: ttdata});
         }, this));
 
       // Otherwise return tree
       } else {
-        options.callback.call(tree, {copy: tree});
+        this.options.callback.call(tree, {copy: tree});
       }
     };
 
@@ -182,7 +183,8 @@
     preserveFormatting: true,
     simpleKeys: false,
     cache: true,
-    staticExport: false
+    staticExport: false,
+    fancyOutput: false
   };
 
 }(jQuery));

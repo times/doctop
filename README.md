@@ -2,16 +2,18 @@
 
 A jQuery plugin for consuming Google Docs via JSON
 
-## NOTE ON DOCTOP 2.0.0
+## NOTE ON DOCTOP 1.1.0
 
-This is a slightly-rewritten version of Doctop that tries to redo the hierarchical
+This is a somewhat-rewritten version of Doctop that tries to redo the hierarchical
 infrastructure proposed in 1.0.0. It creates a DOM-like tree, wherein headers
 have `children` objects, containing either more headers or paragraphs. Also new
 are `index` properties on each item, allowing things to be ordered or converted
 into ordered arrays (times/doctop#6).
 
-The major version number change is because this breaks backwards compatibility.
-Or it might, depending on what I decide when merging to master.
+In order to be backwards compatible, use continues as per before. To get the new
+output format, pass `fancyOutput: true` when instantiating.
+
+N.b., Doctop.js 2.0.0 (release date TBC) will use fancyOutput by default.
 
 ## Getting Started
 
@@ -79,20 +81,10 @@ to get this URL.
 Asynchronous callback for the data. Takes one argument, the response, containing copy and any Tabletop data.
 The `this` context is the contents of `response.copy`.
 
-#### tabletop_url (default: `undefined`)
+#### fancyOutput (default: `false`)
 
-If you have Tabletop.js included on the page, you can supply a published Google Sheets URL
-in order to only need one callback. The Tabletop response will be in the "data" key of the returned object,
-i.e, spreadsheet data in `data.data`, Tabletop object in `data.tabletop`.
-
-#### tabletop_proxy (default: `undefined`)
-
-If you're using Tabletop with Doctop, you can specify the Tabletop proxy here. Note this only works for
-Google Sheets that have been copied to S3 or elsewhere; Doctop proxy support [is still forthcoming](https://github.com/times/doctop/issues/1).
-
-#### tabletop_simplesheet (default: `false`)
-
-Use Tabletop's "simpleSheet" method when grabbing that data. This only really works if you only have one sheet.
+Return detailed response wherein items have indices and are easier to order.
+Note: This is provided for backwards compatibility with 1.0.0. It may be depreciated in 2.0.0.
 
 #### simpleKeys (default: `false`)
 
@@ -115,6 +107,21 @@ This enables `jQuery.ajax()`'s cache feature.
 This allows the parser to consume pages created via Google Docs' "Download as Web page (.html, zipped)"
 feature. For those times when you just don't want to publish a confidential document to the broad intarwebz.
 
+#### tabletop_url (default: `undefined`)
+
+If you have Tabletop.js included on the page, you can supply a published Google Sheets URL
+in order to only need one callback. The Tabletop response will be in the "data" key of the returned object,
+i.e, spreadsheet data in `data.data`, Tabletop object in `data.tabletop`.
+
+#### tabletop_proxy (default: `undefined`)
+
+If you're using Tabletop with Doctop, you can specify the Tabletop proxy here. Note this only works for
+Google Sheets that have been copied to S3 or elsewhere; Doctop proxy support [is still forthcoming](https://github.com/times/doctop/issues/1).
+
+#### tabletop_simplesheet (default: `false`)
+
+Use Tabletop's "simpleSheet" method when grabbing that data. This only really works if you only have one sheet.
+
 #### ~~returnJquery (default: `false`)~~ **DEPRECIATED in 1.0.0**
 
 ~~This returns non-H1 elements as jQuery objects instead of either HTML or text.~~
@@ -130,6 +137,8 @@ _(Coming soon)_
 + Unit tests all up in hurr / up in hurr
 
 ## Release History
+
+### 1.1.0 — Feature release. Adds `fancyOutput` and `staticExport` options.
 
 ### 1.0.0 - First stable release. Adds `preserveFormatting` option and tests; removes `returnJquery`.
 
