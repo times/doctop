@@ -132,9 +132,13 @@ _(Coming soon)_
 
 ## Roadmap/ToDos
 
-+ Add the preserveFormatting option
-+ Add support for other heading tags (h2-6)
-+ Unit tests all up in hurr / up in hurr
+- [ ] Remove speakingurl and return actual headlines as key
+- [ ] Remove jQuery dependency
+- [ ] Make usable via NodeJS
+- [x] Add the preserveFormatting option
+- [x] Add support for other heading tags (h2-6)
+- [x] Unit tests all up in hurr / up in hurr
+
 
 ## Release History
 
