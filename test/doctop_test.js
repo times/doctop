@@ -145,7 +145,7 @@
     var done = assert.async();
 
     $.doctop({
-      url: 'https://docs.google.com/document/d/10LkzOMkBj3a77yjZGWomOR5m9dmEe3jhIhhlBTXE9FQ/pub',
+      url: 'https://docs.google.com/document/d/148QB7J1Sn6OgK0pXLdwanNX4kVq5lytmeRptxxWrjkc/pub',
       callback: function(d) {
         data.resolve(d);
       },
