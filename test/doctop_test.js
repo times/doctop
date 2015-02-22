@@ -140,7 +140,7 @@
     });
   });
 
-  test('it preserves hierarchy', function(assert) {
+  test('it preserves hierarchy', function(assert) { // Thanks to @radiocontrolled for the test case document.
     var data = $.Deferred();
     var done = assert.async();
 

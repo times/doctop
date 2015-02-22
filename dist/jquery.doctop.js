@@ -1,6 +1,6 @@
-/*! doctop - v1.1.0 - 2014-12-16
+/*! doctop - v1.1.1 - 2015-02-22
 * https://github.com/times/doctop
-* Copyright (c) 2014 Ændrew Rininsland; Licensed MIT */
+* Copyright (c) 2015 Ændrew Rininsland; Licensed MIT */
 (function() {
     'use strict';
 
@@ -955,6 +955,7 @@
 
     this._parseDOMIntoTree = function(root) {
       var options = this.options;
+
       var _returnNode = function(tree, node) {
         if (options.fancyOutput) {
           return {
@@ -979,16 +980,26 @@
         } else {
           return $(node).text();
         }
+      };
 
+      var _enumerateKey = function(key, tree) {
+        var i = 0;
+        while (typeof tree[key] !== 'undefined') {
+          key = key + '_' + i;
+          i++;
+        }
+
+        return key;
       };
 
       // Begin the main DOM walker!
 
       var tree = {};
       var currentTree = tree;
+      var currentLevel = 1;
       var i = 0;
       var node = root[0];
-      var tagName, key;
+      var tagName, key, lastTree;
       while (node && node.nodeType === 1) {
         tagName = node.tagName.toLowerCase();
 
@@ -1001,13 +1012,24 @@
           case 'h5':
           case 'h6':
             key = options.simpleKeys ? tagName + '_' + i : getSlug(node.textContent.trim(), {separator: '_'});
-            if (tagName === 'h1') {
+            if (tagName === 'h1') { // is top level
+              key = _enumerateKey(key, tree);
               tree[key] = _returnNode(tree, node);
               currentTree = options.fancyOutput ? tree[key].children : tree[key];
+              lastTree = currentTree;
             } else {
-              currentTree[key] = _returnNode(currentTree, node);
-              currentTree = options.fancyOutput ? currentTree[key].children : currentTree[key];
+              if (currentLevel >= Number(tagName.substr(1))) { // go up a level; same level
+                key = _enumerateKey(key, lastTree);
+                lastTree[key] = _returnNode(lastTree, node);
+                currentTree = options.fancyOutput ? lastTree[key].children : lastTree[key];
+              } else if (currentLevel < Number(tagName.substr(1))){ // go down a level
+                key = _enumerateKey(key, currentTree);
+                currentTree[key] = _returnNode(currentTree, node);
+                currentTree = options.fancyOutput ? currentTree[key].children : currentTree[key];
+              }
             }
+
+            currentLevel = Number(tagName.substr(1)); // assign currentLevel to the level of the current tag.
           break;
 
           // Handle paragraphs
