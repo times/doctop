@@ -2,7 +2,7 @@
 
 A jQuery plugin for consuming Google Docs via JSON
 
-## NOTE ON DOCTOP 1.1.0
+## NOTE ON DOCTOP 1.1.1
 
 This is a somewhat-rewritten version of Doctop that tries to redo the hierarchical
 infrastructure proposed in 1.0.0. It creates a DOM-like tree, wherein headers
@@ -137,6 +137,8 @@ _(Coming soon)_
 + Unit tests all up in hurr / up in hurr
 
 ## Release History
+
+### 1.1.1 — Bugfix release. Fixes some edge cases with the walker, adds more tests.
 
 ### 1.1.0 — Feature release. Adds `fancyOutput` and `staticExport` options.
 

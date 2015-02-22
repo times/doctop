@@ -139,4 +139,58 @@
       done();
     });
   });
+
+  test('it preserves hierarchy', function(assert) {
+    var data = $.Deferred();
+    var done = assert.async();
+
+    $.doctop({
+      url: 'https://docs.google.com/document/d/10LkzOMkBj3a77yjZGWomOR5m9dmEe3jhIhhlBTXE9FQ/pub',
+      callback: function(d) {
+        data.resolve(d);
+      },
+      preserveFormatting: true,
+      fancyOutput: false
+    });
+
+    data.then(function(d){
+      expect(3);
+      assert.strictEqual(typeof d.copy['title_of_the_piece'], 'object', 'Should be one top-level element.');
+      assert.strictEqual(Object.keys(d.copy['title_of_the_piece']).length, 6, 'Should be six second-level elements.');
+      assert.strictEqual(d.copy['title_of_the_piece']['one']['p_0'], '<span style="overflow: hidden; display: inline-block; margin: 0.00px 0.00px; border: 0.00px solid #000000; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px); width: 200.00px; height: 200.00px;"><img alt="200x200.gif" src="https://lh5.googleusercontent.com/RSuGda2-SxuO38LKbZ-Zmy3cswXxgjGxP1GuP8z3faWlyqkcwA5jqYqq-z1n-AFL643ukclN9G5TkeTE4bbxCFZqY--QlCrzGDhnEazKbCXuAitOp2dw6icUvXvB" style="width: 200.00px; height: 200.00px; margin-left: 0.00px; margin-top: 0.00px; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px);" title=""></span>', 'There should be a PNG.');
+      done();
+    });
+  });
+
+  test('it can navigate complex hierarchies', function(assert) {
+    var data = $.Deferred();
+    var done = assert.async();
+
+    $.doctop({
+      url: 'https://docs.google.com/document/d/148QB7J1Sn6OgK0pXLdwanNX4kVq5lytmeRptxxWrjkc/pub',
+      callback: function(d) {
+        data.resolve(d);
+      },
+      preserveFormatting: true,
+      fancyOutput: false
+    });
+
+    data.then(function(d){
+      expect(10);
+      assert.strictEqual(Object.keys(d.copy).length, 2, 'Should be two first-level elements.');
+      assert.strictEqual(Object.keys(d.copy['top_level']).length, 3, 'There should be three second level items in the first top-level element.');
+      assert.strictEqual(typeof d.copy['top_level']['second_level_0'], 'object', 'There should be an enumerated second level object in the first top-level element.');
+      assert.strictEqual(typeof d.copy['top_level']['second_level_0']['third_level'], 'object', 'There should be a third level object in the second second-level object of the first top-level object.');
+      assert.strictEqual(typeof d.copy['top_level']['second_level_0']['third_level']['fourth_level'], 'object', 'There should be a fourth-level object in the third level object in the second second-level object of the first top-level object.');
+      assert.strictEqual(typeof d.copy['top_level']['second_level']['p_0'], 'string', 'There should be a paragraph in the first second-level object of the first top-level object.');
+
+      assert.strictEqual(Object.keys(d.copy['top_level_0']).length, 2, 'There should be two second level items in the second top-level element.');
+      assert.strictEqual(typeof d.copy['top_level_0']['second_level'], 'object', 'There should be a second level item in the second top-level element.');
+      assert.strictEqual(typeof d.copy['top_level_0']['second_level']['fourth_level'], 'object', 'There should be a fourth-level item in the second-level object in second top-level element.');
+      assert.strictEqual(typeof d.copy['top_level_0']['third_level'], 'object', 'There should be a third level item in the second top-level element.');
+
+      done();
+    });
+  });
+
 }(jQuery));
