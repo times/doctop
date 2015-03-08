@@ -2,7 +2,7 @@
 
 A jQuery plugin for consuming Google Docs via JSON
 
-## NOTE ON DOCTOP 1.1.1
+## NOTE ON DOCTOP 1.1.x
 
 This is a somewhat-rewritten version of Doctop that tries to redo the hierarchical
 infrastructure proposed in 1.0.0. It creates a DOM-like tree, wherein headers
@@ -102,6 +102,11 @@ Defaults to `false`.
 
 This enables `jQuery.ajax()`'s cache feature.
 
+#### archieml (default: `false`) -- *New in 1.1.2*
+
+This enables basic [ArchieML](http://archieml.org/) parsing.
+Disables `fancyOutput`, `simpleKeys` and `preserveFormatting` options.
+
 #### staticExport (default: `false`)
 
 This allows the parser to consume pages created via Google Docs' "Download as Web page (.html, zipped)"
@@ -129,6 +134,15 @@ Use Tabletop's "simpleSheet" method when grabbing that data. This only really wo
 ## Examples
 
 _(Coming soon)_
+
+## Building
+
++ `git clone git@github.com:times/doctop.git doctop && cd $_`
++ `npm install && bower install`
++ With ArchieML support (adds ~8kb):
+  + `grunt`
++ Without ArchieML support:
+  + `grunt build:noarchie`
 
 ## Roadmap/ToDos
 

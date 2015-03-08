@@ -145,7 +145,7 @@
     var done = assert.async();
 
     $.doctop({
-      url: 'https://docs.google.com/document/d/148QB7J1Sn6OgK0pXLdwanNX4kVq5lytmeRptxxWrjkc/pub',
+      url: 'https://docs.google.com/document/d/1VEd8vih-KgNgYTSj8ueCejsC83DPO764Dzmj1PRBsuk/pub',
       callback: function(d) {
         data.resolve(d);
       },
@@ -157,7 +157,7 @@
       expect(3);
       assert.strictEqual(typeof d.copy['title_of_the_piece'], 'object', 'Should be one top-level element.');
       assert.strictEqual(Object.keys(d.copy['title_of_the_piece']).length, 6, 'Should be six second-level elements.');
-      assert.strictEqual(d.copy['title_of_the_piece']['one']['p_0'], '<span style="overflow: hidden; display: inline-block; margin: 0.00px 0.00px; border: 0.00px solid #000000; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px); width: 200.00px; height: 200.00px;"><img alt="200x200.gif" src="https://lh5.googleusercontent.com/RSuGda2-SxuO38LKbZ-Zmy3cswXxgjGxP1GuP8z3faWlyqkcwA5jqYqq-z1n-AFL643ukclN9G5TkeTE4bbxCFZqY--QlCrzGDhnEazKbCXuAitOp2dw6icUvXvB" style="width: 200.00px; height: 200.00px; margin-left: 0.00px; margin-top: 0.00px; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px);" title=""></span>', 'There should be a PNG.');
+      assert.notStrictEqual(d.copy['title_of_the_piece']['one']['p_0'].match(/<span style="overflow: hidden; display: inline-block; margin: 0\.00px 0\.00px; border: 0\.00px solid #000000; transform: rotate\(0\.00rad\) translateZ\(0px\); -webkit-transform: rotate\(0\.00rad\) translateZ\(0px\); width: 200\.00px; height: 200\.00px;"><img alt="200x200\.gif" src=".*?" style="width: 200\.00px; height: 200\.00px; margin-left: 0\.00px; margin-top: 0\.00px; transform: rotate\(0\.00rad\) translateZ\(0px\); -webkit-transform: rotate\(0\.00rad\) translateZ\(0px\);" title=""><\/span>/), null, 'There should be a PNG.');
       done();
     });
   });
@@ -193,4 +193,34 @@
     });
   });
 
+  // ArchieML tests
+  if (typeof window.archieml === 'object') {
+    test('it can parse ArchieML', function(assert) {
+      var data = $.Deferred();
+      var done = assert.async();
+
+      $.doctop({
+        url: 'https://docs.google.com/document/d/1KmBlq8ulcDgvfieTjEG1KGq16tadT8-nKVt3MF0wOP0/pub',
+        callback: function(d) {
+          data.resolve(d);
+        },
+        archieml: true
+      });
+
+      data.then(function(d){
+        expect(10);
+        assert.strictEqual(d.copy.array.length, 2, 'Should be two elements in "array".');
+        assert.strictEqual(d.copy['google-link'], 'This is a <a href="http://www.nytimes.com">link</a>.', 'Links should parse properly.');
+        assert.strictEqual(d.copy['heading1'], 'Heading 1', 'Headings should parse properly.');
+        assert.strictEqual(d.copy['heading2'], 'Heading 2', 'Headings should parse properly.');
+        assert.strictEqual(d.copy['heading3'], 'Heading 3', 'Headings should parse properly.');
+        assert.strictEqual(d.copy['heading4'], 'Heading 4', 'Headings should parse properly.');
+        assert.strictEqual(d.copy['heading5'], 'Heading 5', 'Headings should parse properly.');
+        assert.strictEqual(d.copy['heading6'], 'Heading 6', 'Headings should parse properly.');
+        assert.strictEqual(d.copy['heading-link'], '<a href="#h.rinwzq4psmlj">Link to heading 1</a>', 'Heading links should parse as text.');
+        assert.strictEqual(d.copy['smart-quotes'], '<a href="http://www.nytimes.com">nytimes.com</a>', 'Smart quotes should be removed.');
+        done();
+      });
+    });
+  }
 }(jQuery));

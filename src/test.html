@@ -5,13 +5,14 @@
 <body>
   <script src="../bower_components/jquery/dist/jquery.js"></script>
   <script src="../bower_components/speakingurl/speakingurl.min.js"></script>
+  <script src="../bower_components/archieml-js/archieml.js"></script>
   <script src="doctop.js"></script>
   <script type="text/javascript">
     (function($){
       $.doctop({
-        url: 'https://docs.google.com/document/d/148QB7J1Sn6OgK0pXLdwanNX4kVq5lytmeRptxxWrjkc/pub',
+        url: 'https://docs.google.com/document/d/1KmBlq8ulcDgvfieTjEG1KGq16tadT8-nKVt3MF0wOP0/pub',
         // url: 'https://docs.google.com/document/d/10LkzOMkBj3a77yjZGWomOR5m9dmEe3jhIhhlBTXE9FQ/pub',
-        fancyOutput: false,
+        archieml: true,
         callback: function(d) {
           console.dir(d);
         }

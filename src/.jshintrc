@@ -15,7 +15,8 @@
     "getSlug": true,
     "console": true,
     "Tabletop": true,
-    "jQuery": true
+    "jQuery": true,
+    "archieml": true
   },
   "loopfunc": false
 }

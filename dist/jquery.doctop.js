@@ -1,4 +1,4 @@
-/*! doctop - v1.1.1 - 2015-02-22
+/*! doctop - v1.1.1 - 2015-03-08
 * https://github.com/times/doctop
 * Copyright (c) 2015 Ændrew Rininsland; Licensed MIT */
 (function() {
@@ -1081,7 +1081,18 @@
       crossDomain: true,
       success: function(res) {
         var root = this._parseAndCleanDOM(res);
-        var tree = this._parseDOMIntoTree(root);
+        var tree,
+            doc = String();
+
+        if (this.options.archieml && typeof window.archieml === 'object') {
+          root.each(function(i, v){
+            doc += $(v).text() + '\n';
+          });
+          tree = archieml.load(doc);
+          console.dir(tree);
+        } else {
+          tree = this._parseDOMIntoTree(root);
+        }
         this._doCallbacks(tree);
       }
     });
@@ -1100,7 +1111,8 @@
     simpleKeys: false,
     cache: true,
     staticExport: false,
-    fancyOutput: false
+    fancyOutput: false,
+    archieml: false
   };
 
 }(jQuery));

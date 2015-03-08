@@ -25,6 +25,10 @@ module.exports = function (grunt) {
         stripBanners: true
       },
       dist: {
+        src: ['bower_components/speakingurl/lib/index.js', 'bower_components/archieml-js/archieml.js', 'src/<%= pkg.name %>.js'],
+        dest: 'dist/jquery.<%= pkg.name %>.js'
+      },
+      'without-archieml': {
         src: ['bower_components/speakingurl/lib/index.js', 'src/<%= pkg.name %>.js'],
         dest: 'dist/jquery.<%= pkg.name %>.js'
       }
@@ -94,6 +98,8 @@ module.exports = function (grunt) {
 
   // Default task.
   grunt.registerTask('default', ['jshint', 'connect', 'qunit', 'clean', 'concat', 'uglify']);
+  grunt.registerTask('build:noarchie', ['jshint', 'connect', 'qunit', 'clean', 'concat:without-archieml', 'uglify']);
+
   grunt.registerTask('server', function () {
     grunt.log.warn('The `server` task has been deprecated. Use `grunt serve` to start a server.');
     grunt.task.run(['serve']);
