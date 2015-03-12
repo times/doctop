@@ -14,8 +14,7 @@
     // Override default options with passed-in options.
     this.options = $.extend({}, $.doctop.options, options);
 
-    this._parseAndCleanDOM = function(res) {
-      var root;
+    this._cleanGDoc = function(res) {
       if (this.options.staticExport) {
         root = $(res)
                 .not('meta')
@@ -28,109 +27,46 @@
         .not('style'); // Don't need no stylesheets hurr!
       }
 
-      if (this.options.archieml && typeof window.archieml === 'object') { // Parse according to ArchieML rules
-        // Modified from: https://github.com/newsdev/archieml-js/blob/master/examples/google_drive.js
-        var tagHandlers = {
-          _base: function (tag) {
-            var str = '', func;
-            if (typeof tag.tagName !== 'undefined') {
-              if (tag.children.length) {
-                $.each(tag.children, function(i, child) {
-                  if (func = tagHandlers[child.tagName.toLowerCase()]){
-                    str += func(child);
-                  }
-                });
-              } else {
-                str += $(tag).text();
-              }
+      return root;
+    };
 
-            } else { // top level
-              tag.each(function(i, child) {
-                if (func = tagHandlers[child.tagName.toLowerCase()]) {
-                  str += func(child);
-                }
-              });
-            }
+    this._parseAndCleanDOM = function(res) {
+      var root;
 
-            return str;
-          },
-          text: function (textTag) {
-            return $(textTag).text();
-          },
-          span: function (spanTag) {
-            return tagHandlers._base(spanTag);
-          },
-          p: function (pTag) {
-            return tagHandlers._base(pTag) + '\n';
-          },
-          a: function (aTag) {
-            var href = $(aTag).attr('href');
-            if (href === undefined) {
-              return '';
-            }
+      root = this._cleanGDoc(res);
 
-            // extract real URLs from Google's tracking
-            // from: http://www.google.com/url?q=http%3A%2F%2Fwww.nytimes.com...
-            // to: http://www.nytimes.com...
-            if (href && aTag.search.indexOf('?q=') > -1) {
-              href = aTag.search.substr(aTag.search.indexOf('q=') + 2, aTag.search.indexOf('&') > - 1 ? aTag.search.indexOf('&') - 3 : undefined);
-              href = decodeURIComponent(href);
-            }
-
-            var str = '<a href="' + href + '">';
-            str += $(aTag).text(); //TODO //tagHandlers._base(aTag);
-            str += '</a>';
-
-            return str;
-          },
-          li: function (tag) {
-            return '* ' + tagHandlers._base(tag) + '\n';
-          }
-        };
-
-        ['ul', 'ol'].forEach(function(tag) {
-          tagHandlers[tag] = tagHandlers.span;
-        });
-
-        ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'].forEach(function(tag) {
-          tagHandlers[tag] = tagHandlers.p;
-        });
-
-        return tagHandlers._base(root);
-      } else {
-        // Replace spans with proper <strong> and <em> elements.
-        if (this.options.preserveFormatting || this.options.fancyOutput) {
-          var textStyles = this.options.staticExport ? $(res).filter('style')[0].innerHTML : $(res).filter('#contents').children('style')[0].innerHTML;
-          var boldClass = /(\.[a-z0-9]+?)\{[^{}]*?font-weight:bold[^{}]*?\}/gi.exec(textStyles);
-          var italicClass = /(\.[a-z0-9]+?)\{[^{}]*?font-style:italic[^{}]*?\}/gi.exec(textStyles);
-          if (boldClass && boldClass.length > 0) {
-            root.find('span' + boldClass[1]).each(function(i, v){
-              $(v).replaceWith('<strong>'  + v.innerHTML + '</strong>');
-            });
-          }
-
-          if (italicClass && italicClass.length >  0) {
-            root.find('span' + italicClass[1]).each(function(i, v){
-              $(v).replaceWith('<em>' + v.innerHTML + '</em>');
-            });
-          }
+      // Replace spans with proper <strong> and <em> elements.
+      if (this.options.preserveFormatting || this.options.fancyOutput) {
+        var textStyles = this.options.staticExport ? $(res).filter('style')[0].innerHTML : $(res).filter('#contents').children('style')[0].innerHTML;
+        var boldClass = /(\.[a-z0-9]+?)\{[^{}]*?font-weight:bold[^{}]*?\}/gi.exec(textStyles);
+        var italicClass = /(\.[a-z0-9]+?)\{[^{}]*?font-style:italic[^{}]*?\}/gi.exec(textStyles);
+        if (boldClass && boldClass.length > 0) {
+          root.find('span' + boldClass[1]).each(function(i, v){
+            $(v).replaceWith('<strong>'  + v.innerHTML + '</strong>');
+          });
         }
 
-        // Strip out all the stupid class-less <span> tags
-        $.grep(root.find('span'), function(v){
-          if ($(v).text().length > 0) {
-            $(v).replaceWith(v.innerHTML);
-            return true;
-          }
-        });
-
-        // Remove &nbsp; and Unicode 160
-        root.each(function(i, v){
-          v.innerHTML = v.innerHTML.replace(/(?:\x0A|&nbsp;)/gi, ' ');
-        });
-
-        return root;
+        if (italicClass && italicClass.length >  0) {
+          root.find('span' + italicClass[1]).each(function(i, v){
+            $(v).replaceWith('<em>' + v.innerHTML + '</em>');
+          });
+        }
       }
+
+      // Strip out all the stupid class-less <span> tags
+      $.grep(root.find('span'), function(v){
+        if ($(v).text().length > 0) {
+          $(v).replaceWith(v.innerHTML);
+          return true;
+        }
+      });
+
+      // Remove &nbsp; and Unicode 160
+      root.each(function(i, v){
+        v.innerHTML = v.innerHTML.replace(/(?:\x0A|&nbsp;)/gi, ' ');
+      });
+
+      return root;
     };
 
     this._parseDOMIntoTree = function(root) {
@@ -229,6 +165,78 @@
       return tree;
     }; // end this._parseDOMIntoTree
 
+
+    this._parseArchieML = function(root) {
+      // Modified from: https://github.com/newsdev/archieml-js/blob/master/examples/google_drive.js
+      var tagHandlers = {
+        _base: function (tag) {
+          var str = '', func;
+          if (typeof tag.tagName !== 'undefined') {
+            if (tag.children.length) {
+              $.each(tag.children, function(i, child) {
+                if (func = tagHandlers[child.tagName.toLowerCase()]){
+                  str += func(child);
+                }
+              });
+            } else {
+              str += $(tag).text();
+            }
+
+          } else { // top level
+            tag.each(function(i, child) {
+              if (func = tagHandlers[child.tagName.toLowerCase()]) {
+                str += func(child);
+              }
+            });
+          }
+
+          return str;
+        },
+        text: function (textTag) {
+          return $(textTag).text();
+        },
+        span: function (spanTag) {
+          return tagHandlers._base(spanTag);
+        },
+        p: function (pTag) {
+          return tagHandlers._base(pTag) + '\n';
+        },
+        a: function (aTag) {
+          var href = $(aTag).attr('href');
+          if (href === undefined) {
+            return '';
+          }
+
+          // extract real URLs from Google's tracking
+          // from: http://www.google.com/url?q=http%3A%2F%2Fwww.nytimes.com...
+          // to: http://www.nytimes.com...
+          if (href && aTag.search.indexOf('?q=') > -1) {
+            href = aTag.search.substr(aTag.search.indexOf('q=') + 2, aTag.search.indexOf('&') > - 1 ? aTag.search.indexOf('&') - 3 : undefined);
+            href = decodeURIComponent(href);
+          }
+
+          var str = '<a href="' + href + '">';
+          str += $(aTag).text(); //TODO //tagHandlers._base(aTag);
+          str += '</a>';
+
+          return str;
+        },
+        li: function (tag) {
+          return '* ' + tagHandlers._base(tag) + '\n';
+        }
+      };
+
+      ['ul', 'ol'].forEach(function(tag) {
+        tagHandlers[tag] = tagHandlers.span;
+      });
+
+      ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'].forEach(function(tag) {
+        tagHandlers[tag] = tagHandlers.p;
+      });
+
+      return tagHandlers._base(root);
+    };
+
     this._doCallbacks = function(tree) {
       // Add Tabletop to output if requested
       if (typeof this.options.tabletop_url !== 'undefined' && typeof Tabletop !== 'undefined') {
@@ -261,16 +269,19 @@
       crossDomain: true,
       success: function(res) {
         var root = this._parseAndCleanDOM(res);
-        var tree;
+        var tree,
+            archie;
+        var tree = this._parseDOMIntoTree(root);
+
         if (this.options.archieml && typeof window.archieml === 'object') {
+          archie = this._parseArchieML(this._cleanGDoc(res));
           // Remove smart quotes from inside tags
-          root = root.replace(/<[^<>]*>/g, function(match){
+          archie = archie.replace(/<[^<>]*>/g, function(match){
             return match.replace(/”|“/g, '"').replace(/‘|’/g, "'");
           });
-          tree = archieml.load(root);
-        } else {
-          tree = this._parseDOMIntoTree(root);
+          tree.archie = archieml.load(archie);
         }
+
         this._doCallbacks(tree);
       }
     });
