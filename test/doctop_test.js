@@ -209,16 +209,16 @@
 
       data.then(function(d){
         expect(10);
-        assert.strictEqual(d.copy.array.length, 2, 'Should be two elements in "array".');
-        assert.strictEqual(d.copy['google-link'], 'This is a <a href="http://www.nytimes.com">link</a>.', 'Links should parse properly.');
-        assert.strictEqual(d.copy['heading1'], 'Heading 1', 'Headings should parse properly.');
-        assert.strictEqual(d.copy['heading2'], 'Heading 2', 'Headings should parse properly.');
-        assert.strictEqual(d.copy['heading3'], 'Heading 3', 'Headings should parse properly.');
-        assert.strictEqual(d.copy['heading4'], 'Heading 4', 'Headings should parse properly.');
-        assert.strictEqual(d.copy['heading5'], 'Heading 5', 'Headings should parse properly.');
-        assert.strictEqual(d.copy['heading6'], 'Heading 6', 'Headings should parse properly.');
-        assert.strictEqual(d.copy['heading-link'], '<a href="#h.rinwzq4psmlj">Link to heading 1</a>', 'Heading links should parse as text.');
-        assert.strictEqual(d.copy['smart-quotes'], '<a href="http://www.nytimes.com">nytimes.com</a>', 'Smart quotes should be removed.');
+        assert.strictEqual(d.copy.archie.array.length, 2, 'Should be two elements in "array".');
+        assert.strictEqual(d.copy.archie['google-link'], 'This is a <a href="http://www.nytimes.com">link</a>.', 'Links should parse properly.');
+        assert.strictEqual(d.copy.archie['heading1'], 'Heading 1', 'Headings should parse properly.');
+        assert.strictEqual(d.copy.archie['heading2'], 'Heading 2', 'Headings should parse properly.');
+        assert.strictEqual(d.copy.archie['heading3'], 'Heading 3', 'Headings should parse properly.');
+        assert.strictEqual(d.copy.archie['heading4'], 'Heading 4', 'Headings should parse properly.');
+        assert.strictEqual(d.copy.archie['heading5'], 'Heading 5', 'Headings should parse properly.');
+        assert.strictEqual(d.copy.archie['heading6'], 'Heading 6', 'Headings should parse properly.');
+        assert.strictEqual(d.copy.archie['heading-link'], '<a href="#h.rinwzq4psmlj">Link to heading 1</a>', 'Heading links should parse as text.');
+        assert.strictEqual(d.copy.archie['smart-quotes'], '<a href="http://www.nytimes.com">nytimes.com</a>', 'Smart quotes should be removed.');
         done();
       });
     });
