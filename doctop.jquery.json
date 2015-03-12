@@ -2,7 +2,7 @@
   "name": "doctop",
   "title": "Doctop",
   "description": "A jQuery plugin for consuming Google Docs via JSON",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "homepage": "http://www.github.com/times/doctop",
   "author": {
     "name": "Ændrew Rininsland",
@@ -23,6 +23,9 @@
     "jquery": "~1.11.1"
   },
   "keywords": [
-    "jquery-plugin"
+    "jquery-plugin",
+    "Google Drive",
+    "Google Documents",
+    "Google"
   ]
 }

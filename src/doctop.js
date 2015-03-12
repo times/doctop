@@ -4,17 +4,26 @@
  * Copyright (c) 2014 Ændrew Rininsland, The Times and Sunday Times
  * Licensed under the MIT license.
  *
- * TODO Ermahgerd, why did I not comment this better? (Æ, 2015.03.09)
  */
 
 (function ($) {
 
-  // Static method.
+  /**
+   * @constructor
+   */
   $.doctop = function (options) {
+
     // Override default options with passed-in options.
     this.options = $.extend({}, $.doctop.options, options);
 
+    /**
+     * Get children of the main #contents div.
+     *
+     * @param {Object} res HTML DOM object
+     * @returns {Object} jQuery object
+     */
     this._cleanGDoc = function(res) {
+      var root;
       if (this.options.staticExport) {
         root = $(res)
                 .not('meta')
@@ -30,6 +39,12 @@
       return root;
     };
 
+    /**
+     * Clean out the gross Google Docs markup
+     *
+     * @param {Object} res HTML Object
+     * @returns {Object} jQuery object
+     */
     this._parseAndCleanDOM = function(res) {
       var root;
 
@@ -69,9 +84,23 @@
       return root;
     };
 
+    /**
+     * Walk through the DOM, sorting elements hierarchically.
+     *
+     * @param {Object} root jQuery Object
+     * @returns {Object} DocTop tree
+     */
     this._parseDOMIntoTree = function(root) {
       var options = this.options;
 
+      /**
+       * Return either an empty object or detailed object based on fancyOutput.
+       *
+       * @private
+       * @param {Object} tree A partial DocTop tree parent
+       * @param {Object} node A DOM node
+       * @returns {Object} Either empty or detailed based on fancyOutput
+       */
       var _returnNode = function(tree, node) {
         if (options.fancyOutput) {
           return {
@@ -84,6 +113,13 @@
         }
       };
 
+      /**
+       * Parse `<p>` tags as fancy object, HTML or text, in that order.
+       *
+       * @private
+       * @param {Object} node A HTML DOM node
+       * @param {Object} currentTree A partial DocTop tree parent
+       */
       var _returnParagraph = function(node, currentTree) {
         if (options.fancyOutput) {
           return {
@@ -98,6 +134,13 @@
         }
       };
 
+      /**
+       * Prevent duplicates of existing keys.
+       *
+       * @param {String} key Current key
+       * @param {Object} tree Current tree
+       * @returns {String} Updated key name
+       */
       var _enumerateKey = function(key, tree) {
         var i = 0;
         while (typeof tree[key] !== 'undefined') {
@@ -165,8 +208,14 @@
       return tree;
     }; // end this._parseDOMIntoTree
 
-
+    /**
+     * Parse a DOM object for ArchieML
+     *
+     * @param {Array} root Array of jQuery objects
+     * @returns {Object} Parsed ArchieML document
+     */
     this._parseArchieML = function(root) {
+      // Parse each tag according to ArchieML rules.
       // Modified from: https://github.com/newsdev/archieml-js/blob/master/examples/google_drive.js
       var tagHandlers = {
         _base: function (tag) {
@@ -234,8 +283,15 @@
         tagHandlers[tag] = tagHandlers.p;
       });
 
+      // Now run each tag through each handler; return.
       return tagHandlers._base(root);
     };
+
+    /**
+     * Return data to callbacks; make Tabletop calls
+     *
+     * @param {Object} tree Parsed DocTop tree
+     */
 
     this._doCallbacks = function(tree) {
       // Add Tabletop to output if requested
@@ -269,24 +325,23 @@
       crossDomain: true,
       success: function(res) {
         var root = this._parseAndCleanDOM(res);
-        var tree,
+        var tree = this._parseDOMIntoTree(root),
             archie;
-        var tree = this._parseDOMIntoTree(root);
 
         if (this.options.archieml && typeof window.archieml === 'object') {
           archie = this._parseArchieML(this._cleanGDoc(res));
+
           // Remove smart quotes from inside tags
           archie = archie.replace(/<[^<>]*>/g, function(match){
             return match.replace(/”|“/g, '"').replace(/‘|’/g, "'");
           });
+
           tree.archie = archieml.load(archie);
         }
 
         this._doCallbacks(tree);
       }
     });
-
-
   }; // end $.doctop
 
   // Static method default options.

@@ -1,19 +1,7 @@
 # Doctop [![Build Status](https://travis-ci.org/times/doctop.svg)](https://travis-ci.org/times/doctop)
 
-A jQuery plugin for consuming Google Docs via JSON
-
-## NOTE ON DOCTOP 1.1.x
-
-This is a somewhat-rewritten version of Doctop that tries to redo the hierarchical
-infrastructure proposed in 1.0.0. It creates a DOM-like tree, wherein headers
-have `children` objects, containing either more headers or paragraphs. Also new
-are `index` properties on each item, allowing things to be ordered or converted
-into ordered arrays (times/doctop#6).
-
-In order to be backwards compatible, use continues as per before. To get the new
-output format, pass `fancyOutput: true` when instantiating.
-
-N.b., Doctop.js 2.0.0 (release date TBC) will use fancyOutput by default.
+A jQuery plugin for consuming Google Docs via JSON.
+Now with [ArchieML](http://www.archieml.org) support!
 
 ## Getting Started
 
@@ -104,8 +92,8 @@ This enables `jQuery.ajax()`'s cache feature.
 
 #### archieml (default: `false`) -- *New in 1.1.2*
 
-This enables basic [ArchieML](http://archieml.org/) parsing.
-Disables `fancyOutput`, `simpleKeys` and `preserveFormatting` options.
+This enables basic [ArchieML](http://archieml.org/) parsing and adds an `archie`
+object to `copy` in the response.
 
 #### staticExport (default: `false`)
 
@@ -153,8 +141,22 @@ _(Coming soon)_
 - [x] Add support for other heading tags (h2-6)
 - [x] Unit tests all up in hurr / up in hurr
 
+## NOTE ON DOCTOP 1.1.x
+
+This is a somewhat-rewritten version of Doctop that tries to redo the hierarchical
+infrastructure proposed in 1.0.0. It creates a DOM-like tree, wherein headers
+have `children` objects, containing either more headers or paragraphs. Also new
+are `index` properties on each item, allowing things to be ordered or converted
+into ordered arrays (times/doctop#6).
+
+In order to be backwards compatible, use continues as per before. To get the new
+output format, pass `fancyOutput: true` when instantiating.
+
+N.b., Doctop.js 2.0.0 (release date TBC) will use fancyOutput by default.
 
 ## Release History
+
+### 1.1.2 — Added ArchieML support; improved inline documentation.
 
 ### 1.1.1 — Bugfix release. Fixes some edge cases with the walker, adds more tests.
 

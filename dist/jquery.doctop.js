@@ -1,4 +1,4 @@
-/*! doctop - v1.1.1 - 2015-03-08
+/*! doctop - v1.1.2 - 2015-03-12
 * https://github.com/times/doctop
 * Copyright (c) 2015 Ændrew Rininsland; Licensed MIT */
 (function() {
@@ -900,12 +900,21 @@
 
 (function ($) {
 
-  // Static method.
+  /**
+   * @constructor
+   */
   $.doctop = function (options) {
+
     // Override default options with passed-in options.
     this.options = $.extend({}, $.doctop.options, options);
 
-    this._parseAndCleanDOM = function(res) {
+    /**
+     * Get children of the main #contents div.
+     *
+     * @param {Object} res HTML DOM object
+     * @returns {Object} jQuery object
+     */
+    this._cleanGDoc = function(res) {
       var root;
       if (this.options.staticExport) {
         root = $(res)
@@ -918,6 +927,20 @@
         .children()
         .not('style'); // Don't need no stylesheets hurr!
       }
+
+      return root;
+    };
+
+    /**
+     * Clean out the gross Google Docs markup
+     *
+     * @param {Object} res HTML Object
+     * @returns {Object} jQuery object
+     */
+    this._parseAndCleanDOM = function(res) {
+      var root;
+
+      root = this._cleanGDoc(res);
 
       // Replace spans with proper <strong> and <em> elements.
       if (this.options.preserveFormatting || this.options.fancyOutput) {
@@ -953,9 +976,23 @@
       return root;
     };
 
+    /**
+     * Walk through the DOM, sorting elements hierarchically.
+     *
+     * @param {Object} root jQuery Object
+     * @returns {Object} DocTop tree
+     */
     this._parseDOMIntoTree = function(root) {
       var options = this.options;
 
+      /**
+       * Return either an empty object or detailed object based on fancyOutput.
+       *
+       * @private
+       * @param {Object} tree A partial DocTop tree parent
+       * @param {Object} node A DOM node
+       * @returns {Object} Either empty or detailed based on fancyOutput
+       */
       var _returnNode = function(tree, node) {
         if (options.fancyOutput) {
           return {
@@ -968,6 +1005,13 @@
         }
       };
 
+      /**
+       * Parse `<p>` tags as fancy object, HTML or text, in that order.
+       *
+       * @private
+       * @param {Object} node A HTML DOM node
+       * @param {Object} currentTree A partial DocTop tree parent
+       */
       var _returnParagraph = function(node, currentTree) {
         if (options.fancyOutput) {
           return {
@@ -982,6 +1026,13 @@
         }
       };
 
+      /**
+       * Prevent duplicates of existing keys.
+       *
+       * @param {String} key Current key
+       * @param {Object} tree Current tree
+       * @returns {String} Updated key name
+       */
       var _enumerateKey = function(key, tree) {
         var i = 0;
         while (typeof tree[key] !== 'undefined') {
@@ -1049,6 +1100,91 @@
       return tree;
     }; // end this._parseDOMIntoTree
 
+    /**
+     * Parse a DOM object for ArchieML
+     *
+     * @param {Array} root Array of jQuery objects
+     * @returns {Object} Parsed ArchieML document
+     */
+    this._parseArchieML = function(root) {
+      // Parse each tag according to ArchieML rules.
+      // Modified from: https://github.com/newsdev/archieml-js/blob/master/examples/google_drive.js
+      var tagHandlers = {
+        _base: function (tag) {
+          var str = '', func;
+          if (typeof tag.tagName !== 'undefined') {
+            if (tag.children.length) {
+              $.each(tag.children, function(i, child) {
+                if (func = tagHandlers[child.tagName.toLowerCase()]){
+                  str += func(child);
+                }
+              });
+            } else {
+              str += $(tag).text();
+            }
+
+          } else { // top level
+            tag.each(function(i, child) {
+              if (func = tagHandlers[child.tagName.toLowerCase()]) {
+                str += func(child);
+              }
+            });
+          }
+
+          return str;
+        },
+        text: function (textTag) {
+          return $(textTag).text();
+        },
+        span: function (spanTag) {
+          return tagHandlers._base(spanTag);
+        },
+        p: function (pTag) {
+          return tagHandlers._base(pTag) + '\n';
+        },
+        a: function (aTag) {
+          var href = $(aTag).attr('href');
+          if (href === undefined) {
+            return '';
+          }
+
+          // extract real URLs from Google's tracking
+          // from: http://www.google.com/url?q=http%3A%2F%2Fwww.nytimes.com...
+          // to: http://www.nytimes.com...
+          if (href && aTag.search.indexOf('?q=') > -1) {
+            href = aTag.search.substr(aTag.search.indexOf('q=') + 2, aTag.search.indexOf('&') > - 1 ? aTag.search.indexOf('&') - 3 : undefined);
+            href = decodeURIComponent(href);
+          }
+
+          var str = '<a href="' + href + '">';
+          str += $(aTag).text(); //TODO //tagHandlers._base(aTag);
+          str += '</a>';
+
+          return str;
+        },
+        li: function (tag) {
+          return '* ' + tagHandlers._base(tag) + '\n';
+        }
+      };
+
+      ['ul', 'ol'].forEach(function(tag) {
+        tagHandlers[tag] = tagHandlers.span;
+      });
+
+      ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'].forEach(function(tag) {
+        tagHandlers[tag] = tagHandlers.p;
+      });
+
+      // Now run each tag through each handler; return.
+      return tagHandlers._base(root);
+    };
+
+    /**
+     * Return data to callbacks; make Tabletop calls
+     *
+     * @param {Object} tree Parsed DocTop tree
+     */
+
     this._doCallbacks = function(tree) {
       // Add Tabletop to output if requested
       if (typeof this.options.tabletop_url !== 'undefined' && typeof Tabletop !== 'undefined') {
@@ -1081,23 +1217,23 @@
       crossDomain: true,
       success: function(res) {
         var root = this._parseAndCleanDOM(res);
-        var tree,
-            doc = String();
+        var tree = this._parseDOMIntoTree(root),
+            archie;
 
         if (this.options.archieml && typeof window.archieml === 'object') {
-          root.each(function(i, v){
-            doc += $(v).text() + '\n';
+          archie = this._parseArchieML(this._cleanGDoc(res));
+
+          // Remove smart quotes from inside tags
+          archie = archie.replace(/<[^<>]*>/g, function(match){
+            return match.replace(/”|“/g, '"').replace(/‘|’/g, "'");
           });
-          tree = archieml.load(doc);
-          console.dir(tree);
-        } else {
-          tree = this._parseDOMIntoTree(root);
+
+          tree.archie = archieml.load(archie);
         }
+
         this._doCallbacks(tree);
       }
     });
-
-
   }; // end $.doctop
 
   // Static method default options.
