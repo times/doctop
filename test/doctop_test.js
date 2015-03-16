@@ -136,6 +136,7 @@
       assert.strictEqual(typeof d.data, 'object', 'There should be a data object.');
       assert.strictEqual(typeof d.data.data, 'object', 'There should be a Tabletop data object.');
       assert.strictEqual(typeof d.data.tabletop, 'object', 'There should be a Tabletop object.');
+
       done();
     });
   });
@@ -155,9 +156,10 @@
 
     data.then(function(d){
       expect(3);
-      assert.strictEqual(typeof d.copy['title_of_the_piece'], 'object', 'Should be one top-level element.');
-      assert.strictEqual(Object.keys(d.copy['title_of_the_piece']).length, 6, 'Should be six second-level elements.');
-      assert.notStrictEqual(d.copy['title_of_the_piece']['one']['p_0'].match(/<span style="overflow: hidden; display: inline-block; margin: 0\.00px 0\.00px; border: 0\.00px solid #000000; transform: rotate\(0\.00rad\) translateZ\(0px\); -webkit-transform: rotate\(0\.00rad\) translateZ\(0px\); width: 200\.00px; height: 200\.00px;"><img alt="200x200\.gif" src=".*?" style="width: 200\.00px; height: 200\.00px; margin-left: 0\.00px; margin-top: 0\.00px; transform: rotate\(0\.00rad\) translateZ\(0px\); -webkit-transform: rotate\(0\.00rad\) translateZ\(0px\);" title=""><\/span>/), null, 'There should be a PNG.');
+      assert.strictEqual(typeof d.copy['Title of the piece'], 'object', 'Should be one top-level element.');
+      assert.strictEqual(Object.keys(d.copy['Title of the piece']).length, 6, 'Should be six second-level elements.');
+      assert.notStrictEqual(d.copy['Title of the piece']['One']['p_0'].match(/<span style="overflow: hidden; display: inline-block; margin: 0\.00px 0\.00px; border: 0\.00px solid #000000; transform: rotate\(0\.00rad\) translateZ\(0px\); -webkit-transform: rotate\(0\.00rad\) translateZ\(0px\); width: 200\.00px; height: 200\.00px;"><img alt="200x200\.gif" src=".*?" style="width: 200\.00px; height: 200\.00px; margin-left: 0\.00px; margin-top: 0\.00px; transform: rotate\(0\.00rad\) translateZ\(0px\); -webkit-transform: rotate\(0\.00rad\) translateZ\(0px\);" title=""><\/span>/), null, 'There should be a PNG.');
+
       done();
     });
   });
@@ -178,16 +180,16 @@
     data.then(function(d){
       expect(10);
       assert.strictEqual(Object.keys(d.copy).length, 2, 'Should be two first-level elements.');
-      assert.strictEqual(Object.keys(d.copy['top_level']).length, 3, 'There should be three second level items in the first top-level element.');
-      assert.strictEqual(typeof d.copy['top_level']['second_level_0'], 'object', 'There should be an enumerated second level object in the first top-level element.');
-      assert.strictEqual(typeof d.copy['top_level']['second_level_0']['third_level'], 'object', 'There should be a third level object in the second second-level object of the first top-level object.');
-      assert.strictEqual(typeof d.copy['top_level']['second_level_0']['third_level']['fourth_level'], 'object', 'There should be a fourth-level object in the third level object in the second second-level object of the first top-level object.');
-      assert.strictEqual(typeof d.copy['top_level']['second_level']['p_0'], 'string', 'There should be a paragraph in the first second-level object of the first top-level object.');
+      assert.strictEqual(Object.keys(d.copy['Top Level']).length, 3, 'There should be three second level items in the first top-level element.');
+      assert.strictEqual(typeof d.copy['Top Level']['Second Level_0'], 'object', 'There should be an enumerated second level object in the first top-level element.');
+      assert.strictEqual(typeof d.copy['Top Level']['Second Level_0']['Third Level'], 'object', 'There should be a third level object in the second second-level object of the first top-level object.');
+      assert.strictEqual(typeof d.copy['Top Level']['Second Level_0']['Third Level']['Fourth Level'], 'object', 'There should be a fourth-level object in the third level object in the second second-level object of the first top-level object.');
+      assert.strictEqual(typeof d.copy['Top Level']['Second Level']['p_0'], 'string', 'There should be a paragraph in the first second-level object of the first top-level object.');
 
-      assert.strictEqual(Object.keys(d.copy['top_level_0']).length, 2, 'There should be two second level items in the second top-level element.');
-      assert.strictEqual(typeof d.copy['top_level_0']['second_level'], 'object', 'There should be a second level item in the second top-level element.');
-      assert.strictEqual(typeof d.copy['top_level_0']['second_level']['fourth_level'], 'object', 'There should be a fourth-level item in the second-level object in second top-level element.');
-      assert.strictEqual(typeof d.copy['top_level_0']['third_level'], 'object', 'There should be a third level item in the second top-level element.');
+      assert.strictEqual(Object.keys(d.copy['Top Level_0']).length, 2, 'There should be two second level items in the second top-level element.');
+      assert.strictEqual(typeof d.copy['Top Level_0']['Second Level'], 'object', 'There should be a second level item in the second top-level element.');
+      assert.strictEqual(typeof d.copy['Top Level_0']['Second Level']['Fourth Level'], 'object', 'There should be a fourth-level item in the second-level object in second top-level element.');
+      assert.strictEqual(typeof d.copy['Top Level_0']['Third Level'], 'object', 'There should be a third level item in the second top-level element.');
 
       done();
     });

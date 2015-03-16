@@ -25,11 +25,11 @@ module.exports = function (grunt) {
         stripBanners: true
       },
       dist: {
-        src: ['bower_components/speakingurl/lib/index.js', 'bower_components/archieml-js/archieml.js', 'src/<%= pkg.name %>.js'],
+        src: ['bower_components/archieml-js/archieml.js', 'src/<%= pkg.name %>.js'],
         dest: 'dist/jquery.<%= pkg.name %>.js'
       },
       'without-archieml': {
-        src: ['bower_components/speakingurl/lib/index.js', 'src/<%= pkg.name %>.js'],
+        src: ['src/<%= pkg.name %>.js'],
         dest: 'dist/jquery.<%= pkg.name %>.js'
       }
     },
@@ -45,7 +45,7 @@ module.exports = function (grunt) {
     qunit: {
       all: {
         options: {
-          urls: ['http://localhost:9000/test/<%= pkg.name %>.html']
+          urls: ['http://127.0.0.1:9000/test/<%= pkg.name %>.html']
         }
       }
     },

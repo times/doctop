@@ -1,14 +1,16 @@
 {
   "name": "doctop",
-  "version": "1.1.2",
+  "version": "1.2.0",
   "main": "dist/jquery.doctop.js",
   "dependencies": {
-    "speakingurl": "~0.16.0",
     "archieml-js": "newsdev/archieml-js#0.1.1"
   },
   "devDependencies": {
-    "qunit": "~1.16.0",
     "jquery": "~1.11.1",
-    "tabletop": "~1.4.0"
+    "tabletop": "~1.4.0",
+    "qunit": "~1.17.1"
+  },
+  "resolutions": {
+    "qunit": "~1.17.1"
   }
 }

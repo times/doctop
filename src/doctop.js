@@ -106,6 +106,8 @@
           return {
             index: Object.keys(tree).length,
             content: node.textContent.trim(),
+            depth: Number(node.tagName.toUpperCase().replace('H', '')) - 1,
+            tag: node.tagName,
             children: {}
           };
         } else {
@@ -125,7 +127,8 @@
           return {
             content: $(node).text(),
             content_html: node.innerHTML,
-            index: Object.keys(currentTree).length
+            index: Object.keys(currentTree).length,
+            tag: node.tagName
           };
         } else if (options.preserveFormatting) {
           return node.innerHTML;
@@ -170,7 +173,7 @@
           case 'h4':
           case 'h5':
           case 'h6':
-            key = options.simpleKeys ? tagName + '_' + i : getSlug(node.textContent.trim(), {separator: '_'});
+            key = options.simpleKeys ? tagName + '_' + i : node.textContent.trim();
             if (tagName === 'h1') { // is top level
               key = _enumerateKey(key, tree);
               tree[key] = _returnNode(tree, node);

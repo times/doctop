@@ -76,9 +76,9 @@ Note: This is provided for backwards compatibility with 1.0.0. It may be depreci
 
 #### simpleKeys (default: `false`)
 
-Instead of creating keys for the sections that are the slugified version of the H1 text,
+Instead of creating keys for the sections that are the inner text version of the headers,
 return keys in the format `section_0` — this may be desirable if you have journalists
-who enjoy arbitrarily changing the H1 text on you!
+who enjoy arbitrarily changing the header text on you!
 
 #### preserveFormatting (default: `true`)
 
@@ -119,10 +119,6 @@ Use Tabletop's "simpleSheet" method when grabbing that data. This only really wo
 
 ~~This returns non-H1 elements as jQuery objects instead of either HTML or text.~~
 
-## Examples
-
-_(Coming soon)_
-
 ## Building
 
 + `git clone git@github.com:times/doctop.git doctop && cd $_`
@@ -134,12 +130,18 @@ _(Coming soon)_
 
 ## Roadmap/ToDos
 
-- [ ] Remove speakingurl and return actual headlines as key
+- [x] Remove speakingurl and return actual headlines as key
 - [ ] Remove jQuery dependency
 - [ ] Make usable via NodeJS
 - [x] Add the preserveFormatting option
 - [x] Add support for other heading tags (h2-6)
 - [x] Unit tests all up in hurr / up in hurr
+
+## NOTE ON DOCTOP 1.2.x
+
+Doctop 1.2.x removes speakingurl as a dependency. If you're upgrading and weren't
+using the `simpleKeys` option, you'll need to update the object keys in your code
+to be the full inner text of each header.
 
 ## NOTE ON DOCTOP 1.1.x
 
@@ -154,7 +156,13 @@ output format, pass `fancyOutput: true` when instantiating.
 
 N.b., Doctop.js 2.0.0 (release date TBC) will use fancyOutput by default.
 
+## Roadmap
+
+### 2.0.0 — No reliance on jQuery; usable in NodeJS.
+
 ## Release History
+
+### 1.2.0 — Removed speakingurl.
 
 ### 1.1.2 — Added ArchieML support; improved inline documentation.
 

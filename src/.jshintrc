@@ -12,7 +12,6 @@
   "eqnull": true,
   "browser": true,
   "globals": {
-    "getSlug": true,
     "console": true,
     "Tabletop": true,
     "jQuery": true,
