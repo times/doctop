@@ -3,6 +3,8 @@
 module.exports = function (grunt) {
   // Load all grunt tasks
   require('load-grunt-tasks')(grunt);
+  grunt.loadNpmTasks('grunt-mocha-test');
+  
   // Show elapsed time at the end
   require('time-grunt')(grunt);
 
@@ -72,6 +74,15 @@ module.exports = function (grunt) {
         src: ['test/**/*.js']
       }
     },
+    mochaTest: {
+      test: {
+        options: {
+          reporter: 'nyan',
+          clearRequireCache: true
+        },
+        src: ['test/*.spec.js']
+      },
+    },
     watch: {
       gruntfile: {
         files: '<%= jshint.gruntfile.src %>',
@@ -105,5 +116,5 @@ module.exports = function (grunt) {
     grunt.task.run(['serve']);
   });
   grunt.registerTask('serve', ['connect', 'watch']);
-  grunt.registerTask('test', ['jshint', 'connect', 'qunit']);
+  grunt.registerTask('test', ['jshint', 'connect', 'qunit', 'mochaTest']);
 };
