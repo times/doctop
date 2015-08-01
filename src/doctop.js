@@ -179,6 +179,7 @@
               tree[key] = _returnNode(tree, node);
               currentTree = options.fancyOutput ? tree[key].children : tree[key];
               lastTree = currentTree;
+              i++;
             } else {
               if (currentLevel >= Number(tagName.substr(1))) { // go up a level; same level
                 key = _enumerateKey(key, lastTree);
@@ -197,8 +198,8 @@
           // Handle paragraphs
           default:
             if (node.innerHTML !== '<span></span>') {
-              i = Object.keys(currentTree).length > 0 ? Object.keys(currentTree).length : 0;
-              key = tagName + '_' + i;
+              ptagi = Object.keys(currentTree).length > 0 ? Object.keys(currentTree).length : 0;
+              key = tagName + '_' + ptagi;
               currentTree[key] = _returnParagraph(node, currentTree);
             }
           break;
