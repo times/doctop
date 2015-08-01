@@ -1,4 +1,4 @@
-/*! doctop - v1.2.0 - 2015-03-16
+/*! doctop - v1.2.0 - 2015-08-01
 * https://github.com/times/doctop
 * Copyright (c) 2015 Ændrew Rininsland; Licensed MIT */
 (function ($) {
@@ -76,6 +76,9 @@
         v.innerHTML = v.innerHTML.replace(/(?:\x0A|&nbsp;)/gi, ' ');
       });
 
+      // Finally, remove all empty tags.
+      $('span:not(:has(*))').remove();
+      
       return root;
     };
 
@@ -155,6 +158,7 @@
       var currentTree = tree;
       var currentLevel = 1;
       var i = 0;
+      var ptagi = 0;
       var node = root[0];
       var tagName, key, lastTree;
       while (node && node.nodeType === 1) {
@@ -174,6 +178,7 @@
               tree[key] = _returnNode(tree, node);
               currentTree = options.fancyOutput ? tree[key].children : tree[key];
               lastTree = currentTree;
+              i++;
             } else {
               if (currentLevel >= Number(tagName.substr(1))) { // go up a level; same level
                 key = _enumerateKey(key, lastTree);
@@ -192,8 +197,8 @@
           // Handle paragraphs
           default:
             if (node.innerHTML !== '<span></span>') {
-              i = Object.keys(currentTree).length > 0 ? Object.keys(currentTree).length : 0;
-              key = tagName + '_' + i;
+              ptagi = Object.keys(currentTree).length > 0 ? Object.keys(currentTree).length : 0;
+              key = tagName + '_' + ptagi;
               currentTree[key] = _returnParagraph(node, currentTree);
             }
           break;
