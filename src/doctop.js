@@ -81,6 +81,9 @@
         v.innerHTML = v.innerHTML.replace(/(?:\x0A|&nbsp;)/gi, ' ');
       });
 
+      // Finally, remove all empty tags.
+      $('span:not(:has(*))').remove();
+      
       return root;
     };
 
@@ -160,6 +163,7 @@
       var currentTree = tree;
       var currentLevel = 1;
       var i = 0;
+      var ptagi = 0;
       var node = root[0];
       var tagName, key, lastTree;
       while (node && node.nodeType === 1) {
