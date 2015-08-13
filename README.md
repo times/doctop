@@ -84,7 +84,6 @@ who enjoy arbitrarily changing the header text on you!
 
 This will attempt to preserve text formatting from Google Docs. It will yield messier
 output because Google Docs loves to wrap everything under the sun in a `<span>` tag.
-Defaults to `false`.
 
 #### cache (default: `true`)
 
