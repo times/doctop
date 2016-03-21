@@ -1,0 +1,13 @@
+{
+  "name": "doctop",
+  "version": false,
+  "dependencies": {
+    "es6-promise": "registry:npm/es6-promise#3.0.0+20160211003958"
+  },
+  "ambientDependencies": {
+    "chai": "registry:dt/chai#3.4.0+20160317120654",
+    "cheerio": "registry:dt/cheerio#0.17.0+20160215162030",
+    "lodash": "registry:dt/lodash#3.10.0+20160308151359",
+    "mocha": "registry:dt/mocha#2.2.5+20160317120654"
+  }
+}
