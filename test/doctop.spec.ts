@@ -3,7 +3,7 @@ import * as chai from 'chai';
 
 let should: Chai.Should = chai.should();
 
-/* tslint:disable:no-unused-expression */
+/* tslint:disable:no-unused-expression max-line-length */
 describe('doctop', () => {
   describe('basic operation', () => {
     it('should be able to grab a document with no other arguments', (done: MochaDone) => {
@@ -11,6 +11,96 @@ describe('doctop', () => {
         callback: (data: any): void => {
           console.log(data);
           should.exist(data);
+
+          //       expect(9);
+          //
+          //       var topLevel = Object.keys(d.copy);
+          //
+          //       assert.strictEqual(topLevel.length, 3, 'Should be three top-level elements.');
+          //       assert.strictEqual(d.copy['h1-1'].children['p_0'].content, 'This is a paragraph of text', 'Should read: "This is a paragraph of text"');
+          //       assert.strictEqual(d.copy['h1-1'].children['p_1'].content, 'this is another paragraph', 'Should read: "this is another paragraph"');
+          //       assert.strictEqual(d.copy['h1-1'].children['h2-1'].children['p_0'].content, 'this should be a child of h2-1, which should be a child of h1-1', 'Should read: "this should be a child of h2-1, which should be a child of h1-1"');
+          //       assert.strictEqual(d.copy['h1-1'].children['h2-1'].children['h3-1'].children['p_0'].content, 'This should be a child of h3-1, which should be a child of h2-1', 'Should read: "This should be a child of h3-1, which should be a child of h2-1"');
+          //       assert.strictEqual(d.copy['h1-2'].children['p_0'].content, 'This should be a child of h1-2, which itself should be in the top level of the object.', 'Should read: "This should be a child of h1-2, which itself should be in the top level of the object."');
+          //       assert.strictEqual(d.copy['h1-2'].children['h3-2'].children['p_0'].content, 'This should be a child of h3-2, which should be a child of h1-2', 'Should read: "This should be a child of h3-2, which should be a child of h1-2"');
+          //       assert.strictEqual(d.copy['h1-3'].children['p_0'].content, 'This should be a child of h1-3', 'Should read: "This should be a child of h1-3"');
+          //       assert.strictEqual(d.copy['h1-3'].children['p_1'].content, 'Anothre child of h1-3', 'Should read: "Anothre child of h1-3"');
+          done();
+        },
+        url: 'https://docs.google.com/document/d/1_zs07o2m1BQisqWT5WEk_aC4TFl9nIZgufc9IYeL64Y/pub',
+      });
+    });
+
+    it('should pass Alison\'s test case', (done: MochaDone) => {
+      new Doctop({
+        callback: (data: any): void => {
+          console.log(data);
+          should.exist(data);
+          //       expect(3);
+          //       assert.strictEqual(typeof d.copy['Title of the piece'], 'object', 'Should be one top-level element.');
+          //       assert.strictEqual(Object.keys(d.copy['Title of the piece']).length, 6, 'Should be six second-level elements.');
+          //       assert.notStrictEqual(d.copy['Title of the piece']['One']['p_0'].match(/<span style="overflow: hidden; display: inline-block; margin: 0\.00px 0\.00px; border: 0\.00px solid #000000; transform: rotate\(0\.00rad\) translateZ\(0px\); -webkit-transform: rotate\(0\.00rad\) translateZ\(0px\); width: 200\.00px; height: 200\.00px;"><img alt="200x200\.gif" src=".*?" style="width: 200\.00px; height: 200\.00px; margin-left: 0\.00px; margin-top: 0\.00px; transform: rotate\(0\.00rad\) translateZ\(0px\); -webkit-transform: rotate\(0\.00rad\) translateZ\(0px\);" title=""><\/span>/), null, 'There should be a PNG.');
+          done();
+        },
+        url: 'https://docs.google.com/document/d/1VEd8vih-KgNgYTSj8ueCejsC83DPO764Dzmj1PRBsuk/pub',
+      });
+    });
+
+    it('should correctly parse the difficult test case', (done: MochaDone) => {
+      new Doctop({
+        callback: (data: any): void => {
+          done();
+        },
+        url: 'https://docs.google.com/document/d/148QB7J1Sn6OgK0pXLdwanNX4kVq5lytmeRptxxWrjkc/pub',
+      });
+    });
+  });
+
+  describe('basic operation with ArchieML', () => {
+    it('should be able to grab a document with no other arguments', (done: MochaDone) => {
+      new Doctop({
+        callback: (data: any): void => {
+          console.log(data);
+          should.exist(data);
+          //       expect(9);
+          //
+          //       var topLevel = Object.keys(d.copy);
+          //
+          //       assert.strictEqual(topLevel.length, 3, 'Should be three top-level elements.');
+          //       assert.strictEqual(d.copy['h1-1'].children['p_0'].content, 'This is a paragraph of text', 'Should read: "This is a paragraph of text"');
+          //       assert.strictEqual(d.copy['h1-1'].children['p_1'].content, 'this is another paragraph', 'Should read: "this is another paragraph"');
+          //       assert.strictEqual(d.copy['h1-1'].children['h2-1'].children['p_0'].content, 'this should be a child of h2-1, which should be a child of h1-1', 'Should read: "this should be a child of h2-1, which should be a child of h1-1"');
+          //       assert.strictEqual(d.copy['h1-1'].children['h2-1'].children['h3-1'].children['p_0'].content, 'This should be a child of h3-1, which should be a child of h2-1', 'Should read: "This should be a child of h3-1, which should be a child of h2-1"');
+          //       assert.strictEqual(d.copy['h1-2'].children['p_0'].content, 'This should be a child of h1-2, which itself should be in the top level of the object.', 'Should read: "This should be a child of h1-2, which itself should be in the top level of the object."');
+          //       assert.strictEqual(d.copy['h1-2'].children['h3-2'].children['p_0'].content, 'This should be a child of h3-2, which should be a child of h1-2', 'Should read: "This should be a child of h3-2, which should be a child of h1-2"');
+          //       assert.strictEqual(d.copy['h1-3'].children['p_0'].content, 'This should be a child of h1-3', 'Should read: "This should be a child of h1-3"');
+          //       assert.strictEqual(d.copy['h1-3'].children['p_1'].content, 'Anothre child of h1-3', 'Should read: "Anothre child of h1-3"');
+          done();
+        },
+        url: 'https://docs.google.com/document/d/1_zs07o2m1BQisqWT5WEk_aC4TFl9nIZgufc9IYeL64Y/pub',
+      });
+    });
+
+    it('should pass Alison\'s test case', (done: MochaDone) => {
+      new Doctop({
+        callback: (data: any): void => {
+          console.log(data);
+          should.exist(data);
+          //       expect(3);
+          //       assert.strictEqual(typeof d.copy['Title of the piece'], 'object', 'Should be one top-level element.');
+          //       assert.strictEqual(Object.keys(d.copy['Title of the piece']).length, 6, 'Should be six second-level elements.');
+          //       assert.notStrictEqual(d.copy['Title of the piece']['One']['p_0'].match(/<span style="overflow: hidden; display: inline-block; margin: 0\.00px 0\.00px; border: 0\.00px solid #000000; transform: rotate\(0\.00rad\) translateZ\(0px\); -webkit-transform: rotate\(0\.00rad\) translateZ\(0px\); width: 200\.00px; height: 200\.00px;"><img alt="200x200\.gif" src=".*?" style="width: 200\.00px; height: 200\.00px; margin-left: 0\.00px; margin-top: 0\.00px; transform: rotate\(0\.00rad\) translateZ\(0px\); -webkit-transform: rotate\(0\.00rad\) translateZ\(0px\);" title=""><\/span>/), null, 'There should be a PNG.');
+
+          done();
+        },
+        url: 'https://docs.google.com/document/d/1VEd8vih-KgNgYTSj8ueCejsC83DPO764Dzmj1PRBsuk/pub',
+      });
+    });
+
+
+    it('should correctly parse the difficult test case', (done: MochaDone) => {
+      new Doctop({
+        callback: (data: any): void => {
           done();
         },
         url: 'https://docs.google.com/document/d/148QB7J1Sn6OgK0pXLdwanNX4kVq5lytmeRptxxWrjkc/pub',
@@ -19,62 +109,6 @@ describe('doctop', () => {
   });
 });
 
-// (function($) {
-//   /*
-//     ======== A Handy Little QUnit Reference ========
-//     http://api.qunitjs.com/
-//
-//     Test methods:
-//       module(name, {[setup][ ,teardown]})
-//       test(name, callback)
-//       expect(numberOfAssertions)
-//       stop(increment)
-//       start(decrement)
-//     Test assertions:
-//       ok(value, [message])
-//       equal(actual, expected, [message])
-//       notEqual(actual, expected, [message])
-//       deepEqual(actual, expected, [message])
-//       notDeepEqual(actual, expected, [message])
-//       strictEqual(actual, expected, [message])
-//       notStrictEqual(actual, expected, [message])
-//       throws(block, [expected], [message])
-//   */
-//
-//   module('jQuery.doctop');
-//
-//   test('parses correctly with fancy output', function(assert) {
-//     var data = $.Deferred();
-//     var done = assert.async();
-//
-//     $.doctop({
-//       url: 'https://docs.google.com/document/d/1_zs07o2m1BQisqWT5WEk_aC4TFl9nIZgufc9IYeL64Y/pub',
-//       callback: function(d) {
-//         data.resolve(d);
-//       },
-//       preserveFormatting: false,
-//       fancyOutput: true
-//     });
-//
-//     data.then(function(d){
-//       expect(9);
-//
-//       var topLevel = Object.keys(d.copy);
-//
-//       assert.strictEqual(topLevel.length, 3, 'Should be three top-level elements.');
-//       assert.strictEqual(d.copy['h1-1'].children['p_0'].content, 'This is a paragraph of text', 'Should read: "This is a paragraph of text"');
-//       assert.strictEqual(d.copy['h1-1'].children['p_1'].content, 'this is another paragraph', 'Should read: "this is another paragraph"');
-//       assert.strictEqual(d.copy['h1-1'].children['h2-1'].children['p_0'].content, 'this should be a child of h2-1, which should be a child of h1-1', 'Should read: "this should be a child of h2-1, which should be a child of h1-1"');
-//       assert.strictEqual(d.copy['h1-1'].children['h2-1'].children['h3-1'].children['p_0'].content, 'This should be a child of h3-1, which should be a child of h2-1', 'Should read: "This should be a child of h3-1, which should be a child of h2-1"');
-//       assert.strictEqual(d.copy['h1-2'].children['p_0'].content, 'This should be a child of h1-2, which itself should be in the top level of the object.', 'Should read: "This should be a child of h1-2, which itself should be in the top level of the object."');
-//       assert.strictEqual(d.copy['h1-2'].children['h3-2'].children['p_0'].content, 'This should be a child of h3-2, which should be a child of h1-2', 'Should read: "This should be a child of h3-2, which should be a child of h1-2"');
-//       assert.strictEqual(d.copy['h1-3'].children['p_0'].content, 'This should be a child of h1-3', 'Should read: "This should be a child of h1-3"');
-//       assert.strictEqual(d.copy['h1-3'].children['p_1'].content, 'Anothre child of h1-3', 'Should read: "Anothre child of h1-3"');
-//
-//       done();
-//     });
-//   });
-//
 //   test('parses correctly without preserveFormatting (not-so-fancy output)', function(assert) {
 //     var data = $.Deferred();
 //     var done = assert.async();
